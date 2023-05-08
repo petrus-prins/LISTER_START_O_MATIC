@@ -34,29 +34,13 @@
 ************************************************************************/
 
 
-
-
-
-#include <Arduino.h>
-#include <Wire.h>
-#include <arduino-timer.h>
-#include <Statistic.h>      
-// #include <FireTimer.h>
-#include <math.h>
-#include <LiquidCrystal_PCF8574.h>
 #include <GLOBALS.h>
 
 
 
-
-//===================GLOBAL START-o-MATIC SYSTEM STATS=============================
-volatile float LCD_AC_Volts = 0.0;
-volatile float LCD_AC_Amps  = 0.0; 
-
-
 //=================================================================================
 
-
+/*
 //===============================LCD I2C PINS======================================
 //    I2C_SDA (PC4) AT328P_PIN_27
 //    I2C_SCL (PC5) AT328P_PIN_28
@@ -66,7 +50,7 @@ volatile float LCD_AC_Amps  = 0.0;
      char LCD_Lines[4][20];                       // 4 lines of 20 character buffer
      LiquidCrystal_PCF8574 LCD(0x27);             // set the LCD address to 0x27 for a 16 chars and 2 line display
 //=================================================================================
-
+*/
 
 
 
@@ -267,12 +251,6 @@ void CLEAR_PHASE_Voltage_Stats()
 
 
 
-void LCD_Write_Line(char * S)
-{
-        LCD.home();
-        LCD.clear();
-        LCD.print("[SYSTEM STARTED]");
-}
 
 
 
@@ -283,6 +261,7 @@ void LCD_Write_Line(char * S)
 
 
 
+/*
 //====================================
 //         INIT LCD      
 //====================================
@@ -302,7 +281,7 @@ void INIT_I2C_LCD()
         LCD.print("[SYSTEM STARTED]");
     } 
 }
-
+*/
 
 
 
@@ -336,15 +315,8 @@ void Process_Scratch_Pad()
 
 
 
-    char someLine1[20];  // 20 chars
-    char someLine2[20];  // 20 chars
-    char someLine3[20];  // 20 chars
-    char someLine4[20];  // 20 chars
 
-
-
-
-
+/*
 //====================================
 //         UPDATE LCD SYSTEM STATS    
 //====================================
@@ -383,10 +355,10 @@ bool Update_LCD(void *)
     strncpy(LCD_Buffer, &LCD_Lines[3][0], 20); LCD_Buffer[20] = '\0';
     LCD.print(LCD_Buffer);
 
-
-
   return true;                                        // Retun True if this function must be called next time by timer lbrary.
 }
+*/
+
 
 //====================================
 //         PROCESS TIMERS    
@@ -444,8 +416,7 @@ void loop()
      Process_Scratch_Pad();
      LCD_AC_Volts = random(0,240);
      LCD_AC_Amps  = random(0, 301)/10; 
-     This has changed.
-     
+
      
                       //  
    //Process_LEDS();
@@ -457,7 +428,7 @@ void loop()
 
 
 
-       gVAR1 = 20;
+       
 }
 
 
