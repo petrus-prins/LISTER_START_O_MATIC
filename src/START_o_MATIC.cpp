@@ -27,7 +27,8 @@
 *        PIN_23_PC0_ADC0 : Input: 220V AC Current Measurement VIA  
 *        PIN_24_PC1_ADC1 : Input: Alternator 220VAC Measurement via ZMPT101B Module 
 *                 
-*        
+*        I2C_SDA (PC4) AT328P_PIN_27
+*        I2C_SCL (PC5) AT328P_PIN_28
 *
 *
 *
@@ -37,31 +38,11 @@
 #include <GLOBALS.h>
 
 
-
-//=================================================================================
-
-/*
-//===============================LCD I2C PINS======================================
-//    I2C_SDA (PC4) AT328P_PIN_27
-//    I2C_SCL (PC5) AT328P_PIN_28
-
-     int  LCD_Present = 0;
-     char LCD_Buffer[21];                         // String Buffer For LCD Use
-     char LCD_Lines[4][20];                       // 4 lines of 20 character buffer
-     LiquidCrystal_PCF8574 LCD(0x27);             // set the LCD address to 0x27 for a 16 chars and 2 line display
-//=================================================================================
-*/
-
-
-
-
 //================================TIMERS===========================================
 
 Timer <1, micros> LCD_Update_Timer;         // create a timer with 1 task and microsecond resolution
 
 //=================================================================================
-
-
 
 
 //==========================ANALOG PINS============================================
@@ -77,12 +58,12 @@ int RELAY4_PIN  =  PIN_PB3;              // AT328P_PIN_17
 
 //=================================================================================
 
-//=================================================================================
 
 //=====================================LEDs========================================
 const int ledPin =  PIN_PB5;             // AT328P_PIN_19
 int ledState = LOW;
 //=================================================================================
+
 
 //================================ATOD TIMER========================================
 unsigned long ATOD_Prev_ms = 0;              
@@ -90,13 +71,14 @@ const long ATOD_Interval_ms = 200;
 float VREF = 5.00;                       // Supply Voltage            
 //=================================================================================
 
+
 //===============================LCD===============================================
-const int LCD_RX_Pin = PIN_PD2;
-const int LCD_TX_Pin = PIN_PD3;
-char LCD_LINE0[20];
+//const int LCD_RX_Pin = PIN_PD2;
+//const int LCD_TX_Pin = PIN_PD3;
+//char LCD_LINE0[20];
 char buff[20];
-char SERIAL_BUFFER1[20];
-char SERIAL_BUFFER2[20];
+//char SERIAL_BUFFER1[20];
+//char SERIAL_BUFFER2[20];
 float fval;
 //=================================================================================
 
@@ -230,11 +212,11 @@ void READ_PHASE_Voltage_Stats()
 float CALCULATE_RMS_Voltage_From_Stats()
 {
     float PHASE1 = Calculate_Phase_Voltage(PHASE1_Max.average(), PHASE1_Min.average());
-    strcpy(SERIAL_BUFFER1,"");
-    strcat(SERIAL_BUFFER1, "[P1: ");
-    dtostrf(PHASE1,3,0,SERIAL_BUFFER2);
-    strcat(SERIAL_BUFFER1, SERIAL_BUFFER2);
-    strcat(SERIAL_BUFFER1, "V] ");
+    //strcpy(SERIAL_BUFFER1,"");
+    //strcat(SERIAL_BUFFER1, "[P1: ");
+    //dtostrf(PHASE1,3,0,SERIAL_BUFFER2);
+    //strcat(SERIAL_BUFFER1, SERIAL_BUFFER2);
+    //strcat(SERIAL_BUFFER1, "V] ");
     float RMS = sqrt(square(PHASE1));   // 380V
     return RMS/sqrt(2);    // 220V
 }
@@ -250,45 +232,6 @@ void CLEAR_PHASE_Voltage_Stats()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-/*
-//====================================
-//         INIT LCD      
-//====================================
-void INIT_I2C_LCD()
-{
-    Wire.begin();                                // Try to connect to LCD
-    Wire.beginTransmission(0x27);
-    int LCD_Error = Wire.endTransmission();
-    if (LCD_Error == 0) { LCD_Present = 1;}     // LCD Is Present Flag Set.
-    if(LCD_Present == 1)                        // LCD OK
-    {
-        LCD.begin(20, 4);                       // initialize the lcd
-        LCD.home();                             // Bring cursor home [0,0] 
-        LCD.clear();                            // Clear LCD
-        LCD.noBlink();                          // Setup Cursor to (not)Blink
-        LCD.setBacklight(255);                  // Set Backlight ON
-        LCD.print("[SYSTEM STARTED]");
-    } 
-}
-*/
-
-
-
-
-
-
-
 //===============================================================================
 //             PROCESS VOLTAGE
 //===============================================================================
@@ -300,6 +243,7 @@ void Process_VOLTAGE()
     READ_PHASE_Voltage_Stats();
     RMS_Voltage = CALCULATE_RMS_Voltage_From_Stats();
     Sample_count = PHASE1_Raw.count();
+    Sample_count = Sample_count;   // get rid of warning for now
     CLEAR_PHASE_Voltage_Stats();
 }
 
@@ -310,54 +254,11 @@ void Process_VOLTAGE()
 void Process_Scratch_Pad()
 {
     float t = millis()/1000.0; // get program time
-    float var_sin = RMS_Voltage; 
+    t = t;// get rid of warning
+    float var_sin = RMS_Voltage;
+    var_sin = var_sin; // remove warning.
 }
 
-
-
-
-/*
-//====================================
-//         UPDATE LCD SYSTEM STATS    
-//====================================
-bool Update_LCD(void *)
-{
-    char sAC_Volts[4];
-    char sAC_Amps[4];
-    char sState[] = "[IDLE     ]";
-
-   strcpy(someLine1,"");
-   dtostrf(LCD_AC_Volts, 3, 0, sAC_Volts);              // 4 is mininum width, 2 is precision; float value is copied
-   dtostrf(LCD_AC_Amps, 2, 0, sAC_Amps);
-   sprintf(someLine1, "%s %sV %sA", sState, sAC_Volts, sAC_Amps);
-  
-    //----------------
-
-    
-    // fill the screen buffer
-    strncpy(&LCD_Lines[0][0], someLine1 , 20);
-    strncpy(&LCD_Lines[1][0], someLine2 , 20);
-    strncpy(&LCD_Lines[2][0], someLine3 , 20);
-    strncpy(&LCD_Lines[3][0], someLine4 , 20);
-    // prepare screen
-    LCD.home();
-    LCD.clear();
-    LCD.setCursor(0, 0);   
-    // copy the buffer to the screen
-    // 1st line continues at 3d line
-    // 2nd line continues at 4th line
-    strncpy(LCD_Buffer, &LCD_Lines[0][0], 20); LCD_Buffer[20] = '\0'; // create a termineted text line 
-    LCD.print(LCD_Buffer);                                         // print the line to screen
-    strncpy(LCD_Buffer, &LCD_Lines[2][0], 20); LCD_Buffer[20] = '\0';
-    LCD.print(LCD_Buffer); 
-    strncpy(LCD_Buffer, &LCD_Lines[1][0], 20); LCD_Buffer[20] = '\0';
-    LCD.print(LCD_Buffer); 
-    strncpy(LCD_Buffer, &LCD_Lines[3][0], 20); LCD_Buffer[20] = '\0';
-    LCD.print(LCD_Buffer);
-
-  return true;                                        // Retun True if this function must be called next time by timer lbrary.
-}
-*/
 
 
 //====================================
@@ -367,8 +268,6 @@ void Process_Timers()
 {
     LCD_Update_Timer.tick();                          // tick the timer
 }
-
-
 
 
 
@@ -393,9 +292,6 @@ void INIT_Timers()
 }
 
 
-
-
-
 //====================================
 //              SETUP       
 //====================================
@@ -417,18 +313,7 @@ void loop()
      LCD_AC_Volts = random(0,240);
      LCD_AC_Amps  = random(0, 301)/10; 
 
-     
-                      //  
-   //Process_LEDS();
-  // Process_ATOD();
-  //Process_VOLTAGE();
-  // Process_EEPROM();
-  // Process_Serial_Commands();
- //  Process_Scratch_Pad();
-
-
-
-       
+           
 }
 
 

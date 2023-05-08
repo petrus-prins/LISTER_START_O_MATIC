@@ -1,10 +1,7 @@
 #include <GLOBALS.h>
 #include <LiquidCrystal_PCF8574.h>
 
-//===============================LCD I2C PINS======================================
-//    I2C_SDA (PC4) AT328P_PIN_27
-//    I2C_SCL (PC5) AT328P_PIN_28
-
+//===============================LCD ============================================
      int  LCD_Present = 0;
      char LCD_Buffer[21];                         // String Buffer For LCD Use
      char LCD_Lines[4][20];                       // 4 lines of 20 character buffer
