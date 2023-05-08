@@ -444,6 +444,8 @@ void loop()
      Process_Scratch_Pad();
      LCD_AC_Volts = random(0,240);
      LCD_AC_Amps  = random(0, 301)/10; 
+     This has changed.
+     
      
                       //  
    //Process_LEDS();
