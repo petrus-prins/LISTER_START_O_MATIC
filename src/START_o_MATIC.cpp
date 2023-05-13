@@ -83,9 +83,7 @@ float fval;
 //=================================================================================
 
 
-//==========================240V STATS =============================================
-float PHASE1_Voltage = 0;                     // Voltage
-float RMS_Voltage = 0;
+
 
 
 //PHASE1
@@ -307,7 +305,7 @@ void setup()
 //====================================
 void loop() 
 {
-     Process_Timers();
+     Process_Timers();                      
      Process_VOLTAGE();                     // Aquire Voltage Samples
      Process_Scratch_Pad();
      LCD_AC_Volts = random(0,240);

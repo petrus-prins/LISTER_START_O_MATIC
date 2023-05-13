@@ -21,11 +21,10 @@
     extern volatile float LCD_AC_Amps; 
 
 
-    extern char someLine1[20];  // 20 chars
-    extern char someLine2[20];  // 20 chars
-    extern char someLine3[20];  // 20 chars
-    extern char someLine4[20];  // 20 chars
 
+    // Live Stats 
+    extern volatile float PHASE1_Voltage;
+    extern volatile float RMS_Voltage;
 
 
 #endif
