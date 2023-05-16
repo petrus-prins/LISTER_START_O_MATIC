@@ -3,6 +3,7 @@
 
     #include <Arduino.h>
     #include <LCD.h>
+    #include <ADC.h>
     #include <Wire.h>
     #include <arduino-timer.h>
     #include <Statistic.h>      
@@ -21,10 +22,25 @@
     extern volatile float LCD_AC_Amps; 
 
 
+    ///==========================ANALOG PINS============================================
+    extern int AC_VOLTAGE_AI_Pin; // =  PIN_A0;    
+    extern int AC_CURRENT_AI_Pin; // =  PIN_A1;     
+    //=================================================================================
+
+
+
+
 
     // Live Stats 
-    extern volatile float PHASE1_Voltage;
-    extern volatile float RMS_Voltage;
+   // extern volatile float AC_Voltage;
+   //  extern volatile float RMS_Voltage;
+
+    extern int Voltage_Samples_Taken;
+    extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Raw;
+    extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Min;
+    extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
+
+
 
 
 #endif

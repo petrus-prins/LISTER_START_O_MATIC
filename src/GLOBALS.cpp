@@ -12,7 +12,19 @@
 volatile float LCD_AC_Volts = 0.0;
 volatile float LCD_AC_Amps  = 0.0; 
 
+int AC_VOLTAGE_AI_Pin  =  PIN_A0;    
+int AC_CURRENT_AI_Pin  =  PIN_A1;  
+
+
+int AC_Voltage_Samples_Taken = 0;
+
+
 
 //==========================240V STATS =============================================
-volatile float PHASE1_Voltage = 0;                     // Voltage
+volatile float AC_Voltage = 0;                     // Voltage
 volatile float RMS_Voltage = 0;
+
+//PHASE1
+statistic::Statistic<float, uint32_t, true> AC_VOLTS_Raw;
+statistic::Statistic<float, uint32_t, true> AC_VOLTS_Min;
+statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
