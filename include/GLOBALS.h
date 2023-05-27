@@ -41,8 +41,9 @@
     extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Raw;
     extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Min;
     extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
-    extern statistic::Statistic<float, uint32_t, true> DC_VOLTS_Raw;
 
+    extern statistic::Statistic<float, uint32_t, true> DC_VOLTS_Raw;
+    extern statistic::Statistic<float, uint32_t, true> DC_VOLTS_Max;
 
 
 #endif

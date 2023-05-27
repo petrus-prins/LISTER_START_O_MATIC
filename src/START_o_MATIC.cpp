@@ -52,7 +52,6 @@ Timer <1, micros> ADC_Update_Timer;         // create a timer with 1 task and mi
 //================================ATOD TIMER========================================
 unsigned long ATOD_Prev_ms = 0;              
 const long ATOD_Interval_ms = 200;
-float VREF = 5.00;                       // Supply Voltage            
 //=================================================================================
 
 
@@ -69,21 +68,6 @@ float fval;
 
 
 
-//==========================================
-//             PROCESS ATOD      
-//==========================================
-void Process_ATOD()
-{
-    unsigned long Current_ms = millis();
-    if (Current_ms - ATOD_Prev_ms >= ATOD_Interval_ms) 
-    {
-        ATOD_Prev_ms = Current_ms;
-        fval = analogRead(AC_CURRENT_AI_Pin)*5.0/1024;
-        dtostrf(fval,4,2,buff);
-    }
-}
-
-
 
 //====================================
 //           INIT TIMERS      
@@ -98,6 +82,7 @@ void INIT_Timers()
 void INIT_Stats()
 {
     RESET_AC_Voltage_Stats();
+    
 }
 
 

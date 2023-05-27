@@ -33,4 +33,7 @@ volatile float DC_Voltage = 0;                     // Expecting 24-28VDC
 statistic::Statistic<float, uint32_t, true> AC_VOLTS_Raw;
 statistic::Statistic<float, uint32_t, true> AC_VOLTS_Min;
 statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
+
+
 statistic::Statistic<float, uint32_t, true> DC_VOLTS_Raw;
+statistic::Statistic<float, uint32_t, true> DC_VOLTS_Max;

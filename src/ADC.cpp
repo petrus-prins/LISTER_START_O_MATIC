@@ -6,6 +6,8 @@ int AC_VOLTAGE_AI_Pin  =  PIN_A0;
 int AC_CURRENT_AI_Pin  =  PIN_A1;  
 int DC_VOLTAGE_AI_Pin  =  PIN_A3;
 
+float VREF = 5.0;
+
 //=========================================================================
 //                           INIT ANALOG PIN MODES      
 //=========================================================================
@@ -16,14 +18,21 @@ void INIT_ANALOG_PIN_Modes()
 
 
 
-
-
 void RESET_AC_Voltage_Stats()
 {
     AC_VOLTS_Raw.clear();
     AC_VOLTS_Min.clear();
     AC_VOLTS_Max.clear();
 }
+
+void RESET_DC_Voltage_Stats()
+{
+    DC_VOLTS_Raw.clear();
+    DC_VOLTS_Max.clear();
+}
+
+
+
 
 
 
@@ -32,7 +41,6 @@ void RESET_AC_Voltage_Stats()
 //===============================================================================
 float Calculate_Real_AC_Voltage(float ADC_Max, float ADC_Min)
 {
-    float VREF = 5.0;
     float Volt_Error_Offset = 0.0;
     float fval = 0;
     fval = fabs(ADC_Max-ADC_Min);           //  ADC difference in max and min
@@ -77,14 +85,21 @@ void Update_ADC_24VDC_Stats(void)
 { 
     float local_DC_Voltage = 0;
     DC_VOLTS_Raw.add(analogRead(DC_VOLTAGE_AI_Pin));
-    if (DC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
+    
+    if (DC_VOLTS_Raw.count() > 100)                               // 500 Samples should be enough for us to calculate voltage.                   
     {
-        local_DC_Voltage = DC_VOLTS_Raw.average();
-        LCD_DC_Volts = local_DC_Voltage;
-        DC_VOLTS_Raw.clear();                                    // Reset 24V stats.
+         DC_VOLTS_Max.add(DC_VOLTS_Raw.maximum());
     }
-}
 
+    if (DC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
+     {
+        local_DC_Voltage = DC_VOLTS_Max.average();
+        LCD_DC_Volts = (local_DC_Voltage*5.0/1024.0)*11.2 +0.62;   // Protecton Diode offset is 0.62 volt.
+        if (LCD_DC_Volts <= 0.7) {LCD_DC_Volts = 0.0;}
+        RESET_DC_Voltage_Stats();                                  // Reset 24V stats.
+     }
+                   
+}
 
 
 
@@ -96,7 +111,7 @@ bool Update_ALL_ADC_Values(void *)
 {   
     Update_ADC_220AC_Stats();
     Update_ADC_24VDC_Stats();
-    return true;    // Retun True if this function must be called next time by timer lbrary.
+    return true;                                                    // Retun True if this function must be called next time by timer lbrary.
 }
 
 

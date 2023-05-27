@@ -2,9 +2,9 @@
 #define HEADER_ACD
 
 
-extern int AC_VOLTAGE_AI_Pin;    
-extern int AC_CURRENT_AI_Pin;  
-extern int DC_VOLTAGE_AI_Pin;
+//extern int AC_VOLTAGE_AI_Pin;    
+//extern int AC_CURRENT_AI_Pin;  
+//extern int DC_VOLTAGE_AI_Pin;
 
 
 void INIT_ANALOG_PIN_Modes();

@@ -55,7 +55,8 @@ bool Update_LCD(void *)
 
     char sAC_Volts[4];
     char sAC_Amps[4];
-    
+    char sDC_Volts[5];
+
     
     // UPDATE CURRENT STATE
     sprintf(sState, "%s", "Idle");
@@ -74,7 +75,10 @@ bool Update_LCD(void *)
     // BUILD LINE 1
     dtostrf(LCD_AC_Volts, 3, 0, sAC_Volts);              // 4 is mininum width, 2 is precision; float value is copied
     dtostrf(LCD_AC_Amps, 2, 0, sAC_Amps);
-    sprintf(someLine1, "%s    %sV %sA ", "AC Line:", sAC_Volts, sAC_Amps);
+    dtostrf(LCD_DC_Volts, 3, 1, sDC_Volts);              // 4 is mininum width, 2 is precision; float value is copied
+    
+
+    sprintf(someLine1, "%s %sVDC %sVAC %sA ", "  ", sDC_Volts, sAC_Volts, sAC_Amps);
 
     // BUILD LINE 2
     sprintf(someLine2, "%s %s [ %s ]", "Starter:", "   ", Starter_State);
