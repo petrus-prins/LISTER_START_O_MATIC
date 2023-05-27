@@ -2,8 +2,9 @@
 #define HEADER_GLOBALS
 
     #include <Arduino.h>
-    #include <LCD.h>
+    #include <DIO.h>
     #include <ADC.h>
+    #include <LCD.h> 
     #include <Wire.h>
     #include <arduino-timer.h>
     #include <Statistic.h>      
@@ -19,12 +20,13 @@
     extern char LCD_Buffer[21];                         // String Buffer For LCD Use
     extern char LCD_Lines[4][20];                       // 4 lines of 20 character buffer
     extern volatile float LCD_AC_Volts;
-    extern volatile float LCD_AC_Amps; 
+    extern volatile float LCD_AC_Amps;
+    extern volatile float LCD_DC_Volts;                //  
 
 
     ///==========================ANALOG PINS============================================
-    extern int AC_VOLTAGE_AI_Pin; // =  PIN_A0;    
-    extern int AC_CURRENT_AI_Pin; // =  PIN_A1;     
+   // extern int AC_VOLTAGE_AI_Pin; // =  PIN_A0;    
+   // extern int AC_CURRENT_AI_Pin; // =  PIN_A1;     
     //=================================================================================
 
 
@@ -39,7 +41,7 @@
     extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Raw;
     extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Min;
     extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
-
+    extern statistic::Statistic<float, uint32_t, true> DC_VOLTS_Raw;
 
 
 

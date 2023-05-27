@@ -2,35 +2,87 @@
 
 
 
+int AC_VOLTAGE_AI_Pin  =  PIN_A0;    
+int AC_CURRENT_AI_Pin  =  PIN_A1;  
+int DC_VOLTAGE_AI_Pin  =  PIN_A3;
+
+//=========================================================================
+//                           INIT ANALOG PIN MODES      
+//=========================================================================
+void INIT_ANALOG_PIN_Modes()
+{
+    pinMode(AC_VOLTAGE_AI_Pin, INPUT);
+}
+
+
+
 
 
 void RESET_AC_Voltage_Stats()
 {
-        AC_VOLTS_Raw.clear();
-        AC_VOLTS_Min.clear();
-        AC_VOLTS_Max.clear();
+    AC_VOLTS_Raw.clear();
+    AC_VOLTS_Min.clear();
+    AC_VOLTS_Max.clear();
 }
 
 
 
 //===============================================================================
-//             CALCUALTE PHASE VOLTAGE
 //             Calculate AC LN voltage based on max and min ADC values.
-//             ADCmin-ADCmax =  210 ADC points = 236V.  
-//             ADCmin-ADCmax =  182 ADC points = 226V.
 //===============================================================================
 float Calculate_Real_AC_Voltage(float ADC_Max, float ADC_Min)
 {
     float VREF = 5.0;
-    float Volt_Error_Offset = 5.0;
+    float Volt_Error_Offset = 0.0;
     float fval = 0;
     fval = fabs(ADC_Max-ADC_Min);           //  ADC difference in max and min
-    fval = fval * VREF;                     // * 5.05V
+    fval = fval * VREF;                     // * 5.00V
     fval = fval / 1024.0;                   // convert ADC to Volts So AC part of signal p-p voltage. 226VAC is equal to ==> 0.9VADC
-    fval = fval * 115;                      // Constant to scale ADCV to ACV
+    fval = fval * 122;                      // Constant to scale ADC 2VACpp to 230VACpp
     fval = fval-Volt_Error_Offset;
     if (fval < 1.0) {fval = 0;}
     return fval;
+}
+
+
+
+//=============================================================
+//                  AC220V
+//==============================================================
+void Update_ADC_220AC_Stats(void)
+{
+    // AC VOLTAGE 
+    float AC_Voltage = 0;
+    AC_VOLTS_Raw.add(analogRead(AC_VOLTAGE_AI_Pin));
+    if (AC_VOLTS_Raw.count() > 100)                               // Take 100 Samples then start guessing min and max from them
+    {
+        AC_VOLTS_Min.add(AC_VOLTS_Raw.minimum());                            
+        AC_VOLTS_Max.add(AC_VOLTS_Raw.maximum());
+    } 
+    
+    if (AC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
+    {
+        AC_Voltage = Calculate_Real_AC_Voltage(AC_VOLTS_Raw.maximum(),AC_VOLTS_Raw.minimum());
+        LCD_AC_Volts = AC_Voltage;
+        RESET_AC_Voltage_Stats();                                 // Kill all stats. 
+    }
+}
+
+
+
+//=============================================================
+//                     DC24V 
+//==============================================================
+void Update_ADC_24VDC_Stats(void)
+{ 
+    float local_DC_Voltage = 0;
+    DC_VOLTS_Raw.add(analogRead(DC_VOLTAGE_AI_Pin));
+    if (DC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
+    {
+        local_DC_Voltage = DC_VOLTS_Raw.average();
+        LCD_DC_Volts = local_DC_Voltage;
+        DC_VOLTS_Raw.clear();                                    // Reset 24V stats.
+    }
 }
 
 
@@ -40,25 +92,12 @@ float Calculate_Real_AC_Voltage(float ADC_Max, float ADC_Min)
 //====================================================
 //  Read and Store All ADC Live System Values
 //====================================================
-bool Update_ADC(void *)
-{
-    
-    float AC_Voltage = 0;
-    // LCD_AC_Volts = ((((float)analogRead(AC_VOLTAGE_AI_Pin))/1024.0)*5.0)*110; 
-    // AC VOLTAGE STATS
-    AC_VOLTS_Raw.add(analogRead(AC_VOLTAGE_AI_Pin));
-    if (AC_VOLTS_Raw.count() > 100)                               // Take 100 Samples then 
-    {
-        AC_VOLTS_Min.add(AC_VOLTS_Raw.minimum());                            
-        AC_VOLTS_Max.add(AC_VOLTS_Raw.maximum());
-    } 
-    
-    if (AC_VOLTS_Raw.count() > 500)                              // After 1000 clear stats
-    {
-        AC_Voltage = Calculate_Real_AC_Voltage(AC_VOLTS_Raw.maximum(),AC_VOLTS_Raw.minimum());
-        RESET_AC_Voltage_Stats();  
-        LCD_AC_Volts = AC_Voltage;
-    }
-
+bool Update_ALL_ADC_Values(void *)
+{   
+    Update_ADC_220AC_Stats();
+    Update_ADC_24VDC_Stats();
     return true;    // Retun True if this function must be called next time by timer lbrary.
 }
+
+
+

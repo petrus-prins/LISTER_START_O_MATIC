@@ -43,24 +43,10 @@
 Timer <1, micros> LCD_Update_Timer;         // create a timer with 1 task and microsecond resolution
 Timer <1, micros> ADC_Update_Timer;         // create a timer with 1 task and microsecond resolution
 
-
 //=================================================================================
 
 
 
-//===============================DIGITAL PINS======================================
-int RELAY1_PIN  =  PIN_PB0;              // AT328P_PIN_14
-int RELAY2_PIN  =  PIN_PB1;              // AT328P_PIN_15
-int RELAY3_PIN  =  PIN_PB2;              // AT328P_PIN_16
-int RELAY4_PIN  =  PIN_PB3;              // AT328P_PIN_17
-
-//=================================================================================
-
-
-//=====================================LEDs========================================
-const int ledPin =  PIN_PB5;             // AT328P_PIN_19
-int ledState = LOW;
-//=================================================================================
 
 
 //================================ATOD TIMER========================================
@@ -83,33 +69,6 @@ float fval;
 
 
 
-
-
-
-
- 
-
-//=================================================================================
-
-
-
-
-void SET_RELAY1(bool STATE)
-{
-    digitalWrite(RELAY1_PIN, STATE);
-}
-
-void SET_RELAY2(bool STATE)
-{
-    digitalWrite(RELAY2_PIN, STATE);
-}
-
-void SET_RELAY3(bool STATE)
-{
-    digitalWrite(RELAY3_PIN, STATE);
-}
-
-
 //==========================================
 //             PROCESS ATOD      
 //==========================================
@@ -126,85 +85,20 @@ void Process_ATOD()
 
 
 
-
-//==========================================
-//             PROCESS LED STATES      
-//==========================================
-void Process_LEDS()
-{
-    if (ledState == LOW)    {   ledState = HIGH;    }
-    else                    {   ledState = LOW;     }
-    digitalWrite(ledPin, ledState);
-}
-
-
-
-
-
-/*
- float Calculate_Phase_Voltage(float ADC_Max, float ADC_Min)
-
- Description:
- ------------
-    Calculate line voltage based on MAX and MIN ADC values.
-    ADC has constant DC offset with AC ponent on top.
-    Mesurement shows that 210 ADC points == 236V.  
-
- Inputs:
- -------
-    float ADC_Max, float ADC_Min
-
- Return:
- -------
-    float - correctly scaled AC voltage in VOLTS.
-*/
-
-
-
-
-int Read_ADC_Average(int ADC_PIN, int num_samples = 1)
-{
-    int local_ADC = 0;
-    for (int i=1; i <= num_samples; i++)
-    {
-        local_ADC += analogRead(ADC_PIN);
-    }
-    local_ADC = local_ADC/num_samples;
-    return local_ADC;  
-}
-
-
-
-
-//====================================
-//           INIT PIN MODES      
-//====================================
-void INIT_PIN_Modes()
-{
-    pinMode(ledPin, OUTPUT);
-    pinMode(RELAY1_PIN, OUTPUT);
-    pinMode(RELAY2_PIN, OUTPUT);
-    pinMode(RELAY3_PIN, OUTPUT);
-
-    // Analog Pins
-    pinMode(AC_VOLTAGE_AI_Pin, INPUT);
-
-}
-
 //====================================
 //           INIT TIMERS      
 //====================================
 void INIT_Timers()
 {
-    LCD_Update_Timer.every(1000000,     Update_LCD);          // 1000000 = 1 second
-    ADC_Update_Timer.every(1000000/1000, Update_ADC);         // 1/1000 of a second 
+    LCD_Update_Timer.every(1000000,     Update_LCD);                     // 1000000 = 1 second
+    ADC_Update_Timer.every(1000000/1000, Update_ALL_ADC_Values);         // 1/1000 of a second 
 }
 
 
-    void INIT_Stats()
-    {
-        RESET_AC_Voltage_Stats();
-    }
+void INIT_Stats()
+{
+    RESET_AC_Voltage_Stats();
+}
 
 
 
@@ -214,9 +108,16 @@ void INIT_Timers()
 void setup() 
 {
     INIT_I2C_LCD();
-    INIT_PIN_Modes();
+    INIT_DIGITAL_PIN_Modes();
+    INIT_ANALOG_PIN_Modes();
     INIT_Stats();
     INIT_Timers();
+
+    SET_RELAY1_KEEP_SYSTEM_ALIVE(true);               // Bridge 24V relay as to keep system alive.
+    delay(1000);                                      // Wait a bit
+    SET_RELAY2_DISABLE_24V_ON_AC(true);               // Then remove the 24V that is sent down the dormant 220VAC line.
+    SET_RELAY3_ENABLE_FUEL_SOLENOID(false);           // Ensure that FUEL solenoid is not active
+    SET_RELAY4_ENABLE_STARTER_MOTOR(false);           // Ensure that the starter motor is not active.
 }
 
 //====================================
@@ -224,19 +125,11 @@ void setup()
 //====================================
 void loop() 
 {
-   
-   
     ADC_Update_Timer.tick();
     LCD_Update_Timer.tick();    
-
-
-
     // LCD_AC_Volts = random(0,240);
     //LCD_AC_Volts = analogRead(PIN_A0);
-
-     LCD_AC_Amps  = random(0, 301)/10; 
-
-           
+     LCD_AC_Amps  = random(0, 301)/10;     
 }
 
 
