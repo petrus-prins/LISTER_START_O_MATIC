@@ -56,6 +56,7 @@ bool Update_LCD(void *)
     char sAC_Volts[4];
     char sAC_Amps[4];
     char sDC_Volts[5];
+    char sStartup_Count[7];
 
     
     // UPDATE CURRENT STATE
@@ -87,7 +88,9 @@ bool Update_LCD(void *)
     sprintf(someLine3, "%s %s [ %s ]", "Fuel:", "      ", Fuel_State);
 
     // BUILD LINE 4
-    sprintf(someLine4, "%s",sState);
+    //sprintf(someLine4, "%s",sState);
+    dtostrf(Startup_Count, 6, 0, sStartup_Count);                // long Shutdown_Count --> String 
+    sprintf(someLine4, "Boot Count: %s",sStartup_Count);
 
 
     // fill the screen buffer

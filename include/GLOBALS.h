@@ -10,6 +10,7 @@
     #include <Statistic.h>      
     #include <math.h>
     #include <LiquidCrystal_PCF8574.h>
+    #include <EPROM.h>
     
     
     //===============
@@ -22,6 +23,10 @@
     extern volatile float LCD_AC_Volts;
     extern volatile float LCD_AC_Amps;
     extern volatile float LCD_DC_Volts;                //  
+    extern volatile long Startup_Count;
+    extern volatile long Shutdown_Count;
+
+
 
 
     ///==========================ANALOG PINS============================================

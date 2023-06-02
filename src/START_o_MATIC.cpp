@@ -92,6 +92,7 @@ void INIT_Stats()
 //====================================
 void setup() 
 {
+    INIT_EEPROM();
     INIT_I2C_LCD();
     INIT_DIGITAL_PIN_Modes();
     INIT_ANALOG_PIN_Modes();
