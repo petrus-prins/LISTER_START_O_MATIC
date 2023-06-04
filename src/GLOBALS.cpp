@@ -18,11 +18,6 @@ volatile float LCD_DC_Volts  = 0.0;
 int AC_Voltage_Samples_Taken = 0;
 
 
-   volatile long Startup_Count;
-    volatile long Shutdown_Count;
-
-
-
 
 
 //==========================240V STATS =============================================

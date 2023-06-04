@@ -23,10 +23,8 @@
     extern volatile float LCD_AC_Volts;
     extern volatile float LCD_AC_Amps;
     extern volatile float LCD_DC_Volts;                //  
-    extern volatile long Startup_Count;
-    extern volatile long Shutdown_Count;
-
-
+    extern volatile long Fail_Count;                   // STARTUP_SHUTDOWN FAIL COUNTER
+ 
 
 
     ///==========================ANALOG PINS============================================
