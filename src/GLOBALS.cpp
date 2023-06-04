@@ -28,11 +28,11 @@ volatile float DC_Voltage = 0;                     // Expecting 24-28VDC
 
 //volatile float RMS_Voltage = 0;
 
-//PHASE1
+//220_VAC STATS
 statistic::Statistic<float, uint32_t, true> AC_VOLTS_Raw;
 statistic::Statistic<float, uint32_t, true> AC_VOLTS_Min;
 statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
-
-
+//24_VDC STATS
 statistic::Statistic<float, uint32_t, true> DC_VOLTS_Raw;
 statistic::Statistic<float, uint32_t, true> DC_VOLTS_Max;
+

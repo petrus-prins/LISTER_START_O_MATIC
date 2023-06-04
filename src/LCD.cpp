@@ -1,4 +1,3 @@
-//#include <LCD.h>
 #include <GLOBALS.h>
 
 
@@ -8,9 +7,6 @@
 //             I2C_SDA (PC4) AT328P_PIN_27 (ADC4)
 //             I2C_SCL (PC5) AT328P_PIN_28 (ADC5)
 //========================================================
-
-
-
 
 
 
