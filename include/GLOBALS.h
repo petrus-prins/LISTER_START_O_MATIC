@@ -24,6 +24,7 @@
     extern volatile float LCD_AC_Amps;
     extern volatile float LCD_DC_Volts;                //  
     extern volatile long Fail_Count;                   // STARTUP_SHUTDOWN FAIL COUNTER
+    extern volatile long Total_System_Starts;          // 
  
 
 

@@ -2,16 +2,16 @@
 #include <EEPROMWearLevel.h>
 
 
-
 #define EEPROM_LAYOUT_VERSION 1
 #define AMOUNT_OF_INDEXES 2
 
 #define INDEX_CONFIGURATION_VAR1 0
 #define INDEX_CONFIGURATION_VAR2 1
 
-volatile long Startup_Count;
-volatile long Shutdown_Count;
-volatile long Fail_Count; 
+long Startup_Count;
+long Shutdown_Count;
+volatile long Fail_Count;
+volatile long Total_System_Starts; 
 
 
 
@@ -23,6 +23,8 @@ void INIT_EEPROM()
     Sanity_Check_Shutdown_Stats_Before_Save();                     
     WRITE_New_Startup_Count_To_EEPROM();
     WRITE_New_Shutdown_Count_To_EEPROM();
+    (void) EEPROM;                                                                  // just shut up warning about not using EEPROM
+
 }
 
 // READ EEPROM STARTUP AND SHITDOWN STATS.
@@ -52,7 +54,7 @@ void WRITE_New_Shutdown_Count_To_EEPROM()
 // CEHCK STATS - limit all values to between 0 and 999999
 void Sanity_Check_Shutdown_Stats_Before_Save()
 {
-    if ((Startup_Count < 0) || (Startup_Count > 999999) ||         // if any count is out of bounds then reset both counts.
+    if ((Startup_Count < 0) || (Startup_Count > 999999) ||          // if any count is out of bounds then reset both counts.
         (Shutdown_Count < 0) || (Shutdown_Count > 999999) ||        
         (Shutdown_Count > Startup_Count))                           // Shutdown may never be more than startip. Logcally not possible.
     {
@@ -60,8 +62,6 @@ void Sanity_Check_Shutdown_Stats_Before_Save()
         Startup_Count = 0;
     }
     
-    //Fail_Count = Startup_Count;
-    //Fail_Count = Shutdown_Count;
-     Fail_Count = Startup_Count - Shutdown_Count;
+     Fail_Count = Startup_Count - Shutdown_Count;                   // Failcount will increase when system is reset and never reached its final state.
 }
 
