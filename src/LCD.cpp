@@ -9,6 +9,8 @@
 //========================================================
 
 
+char LCD_Line[]     = "                     ";            // 21 chars
+
 
 //====================================
 //         INIT LCD      
@@ -26,7 +28,21 @@ void INIT_I2C_LCD()
         LCD.clear();                            // Clear LCD
         LCD.noBlink();                          // Setup Cursor to (not)Blink
         LCD.setBacklight(255);                  // Set Backlight ON
+        // LINE 1
+        LCD.setCursor(0, 0);                    // Line 1
         LCD.print("[SYSTEM STARTED]");
+        // LINE 2
+        LCD.setCursor(0, 1);                    // Line 2
+        LCD.print("START-o-MATIC v1.0");
+        // LINE3 
+        sprintf(LCD_Line, "Resets:      %6ld", Fail_Count);  LCD_Line[20] = '\0'; 
+        LCD.setCursor(0, 2);     
+        LCD.print(LCD_Line);
+        // LINE4
+        sprintf(LCD_Line, "Startups:    %6ld", Total_System_Starts);  LCD_Line[20] = '\0'; 
+        LCD.setCursor(0, 3);     
+        LCD.print(LCD_Line);
+        delay(10000);   
     } 
 }
 

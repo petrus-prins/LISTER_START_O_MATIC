@@ -61,6 +61,7 @@ void Sanity_Check_Shutdown_Stats_Before_Save()
         Startup_Count = 0;
     }
     
+     Total_System_Starts = Startup_Count;
      Fail_Count = Startup_Count - Shutdown_Count;                   // Failcount will increase when system is reset and never reached its final state.
 }
 
