@@ -264,6 +264,7 @@ class EEPROMWearLevel: EEPROMClass {
       if (idx >= amountOfIndexes) {
         logOutOfRange(idx);
         return t;
+        (void) EEPROM; // just shut up warning about not using EEPROM
       }
 #endif
       const int lastIndex = eepromConfig[idx].lastIndexRead;
@@ -322,6 +323,6 @@ class EEPROMWearLevel: EEPROMClass {
 /**
    the instance of EEPROMWearLevel
 */
-extern EEPROMWearLevel EEPROMwl;
+extern EEPROMWearLevel EEPROMwl; 
 
 #endif // #ifndef EEPROM_WEAR_LEVEL_H

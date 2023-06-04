@@ -23,8 +23,7 @@ void INIT_EEPROM()
     Sanity_Check_Shutdown_Stats_Before_Save();                     
     WRITE_New_Startup_Count_To_EEPROM();
     WRITE_New_Shutdown_Count_To_EEPROM();
-    (void) EEPROM;                                                                  // just shut up warning about not using EEPROM
-
+    (void) EEPROM; // just shut up warning about not using EEPROM
 }
 
 // READ EEPROM STARTUP AND SHITDOWN STATS.

@@ -17,6 +17,11 @@ void INIT_ANALOG_PIN_Modes()
 }
 
 
+void INIT_ADC_Stats()
+{
+    RESET_AC_Voltage_Stats();
+}
+
 
 void RESET_AC_Voltage_Stats()
 {
@@ -25,14 +30,13 @@ void RESET_AC_Voltage_Stats()
     AC_VOLTS_Max.clear();
 }
 
+
+
 void RESET_DC_Voltage_Stats()
 {
     DC_VOLTS_Raw.clear();
     DC_VOLTS_Max.clear();
 }
-
-
-
 
 
 
@@ -57,7 +61,7 @@ float Calculate_Real_AC_Voltage(float ADC_Max, float ADC_Min)
 //=============================================================
 //                  AC220V
 //==============================================================
-void Update_ADC_220AC_Stats(void)
+void Update_ADC_220VAC_VOLTAGE_Stats(void)
 {
     // AC VOLTAGE 
     float AC_Voltage = 0;
@@ -109,8 +113,10 @@ void Update_ADC_24VDC_Stats(void)
 //====================================================
 bool Update_ALL_ADC_Values(void *)
 {   
-    Update_ADC_220AC_Stats();
+    Update_ADC_220VAC_VOLTAGE_Stats();
     Update_ADC_24VDC_Stats();
+    // TODO: Update_ADC_220VAC_AMPS_Stats
+    // TODO: Update_ADC_220VAC_CURRENT_SwitchOff_Trigger
     return true;                                                    // Retun True if this function must be called next time by timer lbrary.
 }
 
