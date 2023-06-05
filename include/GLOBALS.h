@@ -20,9 +20,9 @@
     extern int  LCD_Present;
     extern char LCD_Buffer[21];                         // String Buffer For LCD Use
     extern char LCD_Lines[4][20];                       // 4 lines of 20 character buffer
-    extern volatile float LCD_AC_Volts;
-    extern volatile float LCD_AC_Amps;
-    extern volatile float LCD_DC_Volts;                //  
+    extern volatile long LCD_AC_Volts;
+    extern volatile long LCD_AC_Amps;
+    extern volatile long LCD_DC_Volts;                //  
     extern volatile long Fail_Count;                   // STARTUP_SHUTDOWN FAIL COUNTER
     extern volatile long Total_System_Starts;          // 
  

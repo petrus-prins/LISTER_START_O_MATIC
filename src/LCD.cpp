@@ -10,6 +10,11 @@
 
 
 char LCD_Line[]     = "                     ";            // 21 chars
+char sAC_Volts[4];
+char sAC_Amps[4];
+char sDC_Volts[5];
+
+
 
 
 //====================================
@@ -35,23 +40,80 @@ void INIT_I2C_LCD()
         LCD.setCursor(0, 1);                    // Line 2
         LCD.print("START-o-MATIC v1.0");
         // LINE3 
-        sprintf(LCD_Line, "Resets:      %6ld", Fail_Count);  LCD_Line[20] = '\0'; 
+        sprintf(LCD_Line, "Resets:       %6ld", Fail_Count);  LCD_Line[20] = '\0'; 
         LCD.setCursor(0, 2);     
         LCD.print(LCD_Line);
         // LINE4
-        sprintf(LCD_Line, "Startups:    %6ld", Total_System_Starts);  LCD_Line[20] = '\0'; 
+        sprintf(LCD_Line, "Startups:     %6ld", Total_System_Starts);  LCD_Line[20] = '\0'; 
         LCD.setCursor(0, 3);     
         LCD.print(LCD_Line);
-        delay(10000);   
+        delay(10000/10);   
     } 
 }
+
+
+//==========================================================
+//         CONTINUOUSLY UPDATE SYSTEM STATS ON LCD   
+//==========================================================
+bool Update_LCD(void *)
+{
+    // LINE 1  ==>   "230V 25A BATT: 24V"
+    sprintf(LCD_Line, "%3ldV  %2ldA   BATT:%2ldV",LCD_AC_Volts, LCD_AC_Amps, LCD_DC_Volts);
+    LCD.setCursor(0, 0); 
+    LCD.print(LCD_Line);
+   
+    // LINE 2
+    sprintf(LCD_Line, "                    ");
+    LCD.setCursor(0, 1); 
+    LCD.print(LCD_Line);
+ 
+    // LINE 3
+    sprintf(LCD_Line, "                    ");
+    LCD.setCursor(0, 2); 
+    LCD.print(LCD_Line);
+  
+  // LINE 3
+    sprintf(LCD_Line, "                    ");
+    LCD.setCursor(0, 3); 
+    LCD.print(LCD_Line);
+  
+
+
+
+    //dtostrf(LCD_AC_Volts, 3, 0, sAC_Volts);              // 4 is mininum width, 2 is precision; float value is copied
+    //dtostrf(LCD_AC_Amps, 2, 0, sAC_Amps);
+    //dtostrf(LCD_DC_Volts, 3, 1, sDC_Volts);              // 4 is mininum width, 2 is precision; float value is copied
+    
+    //dtostrf(240, 3, 0, sAC_Volts);              // 4 is mininum width, 2 is precision; float value is copied
+    //dtostrf(12, 3, 0, sAC_Amps);
+    //dtostrf(28.1, 3, 1, sDC_Volts);              // 4 is mininum width, 2 is precision; float value is copied
+    
+    
+    //sprintf(LCD_Line, "%sVAC  %sA  %sVDC ", sAC_Volts, sAC_Amps, sDC_Volts);
+    //LCD.setCursor(0, 0); 
+    //LCD.print(LCD_Line);
+   
+    //sprintf(LCD_Line, "%4.0fVAC %3.0fA %3.0fDC",LCD_AC_Volts, LCD_AC_Amps, LCD_DC_Volts);
+    //sprintf(LCD_Line, "%fVAC %fA %fDC",220.0, 15.0, 24.0);  LCD_Line[20] = '\0'; 
+
+
+    //sprintf(LCD_Line, "Resets:       %6ld", (long)21);  LCD_Line[20] = '\0';    // THIS IS OKAY
+    //sprintf(LCD_Line, "Resets:       %6f", (double)21.0);  LCD_Line[20] = '\0';    // THIS IS OKAY
+    //LCD.setCursor(0, 0); 
+    //LCD.print(LCD_Line);
+  
+   return true;    // Retun True if this function must be called next time by timer lbrary.
+}
+
+
+
 
 
 
 //====================================
 //         UPDATE LCD SYSTEM STATS    
 //====================================
-bool Update_LCD(void *)
+bool Update_LCD__OLD(void *)
 {
 
     // LCD_AC_Volts = analogRead(AC_VOLTAGE_AI_Pin);

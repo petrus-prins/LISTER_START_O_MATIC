@@ -11,15 +11,10 @@
 
 
 // 220V
-volatile float LCD_AC_Volts = 0.0;
-volatile float LCD_AC_Amps  = 0.0;
-
+volatile long LCD_AC_Volts = 0;
+volatile long LCD_AC_Amps  = 0;
 // 24VDC
-volatile float LCD_DC_Volts  = 0.0;
-int AC_Voltage_Samples_Taken = 0;
-
-
-
+volatile long LCD_DC_Volts  = 0;
 
 //==========================240V STATS =============================================
 volatile float AC_Voltage = 0;                     // Expecting 220-240VAC
