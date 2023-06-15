@@ -57,18 +57,25 @@ void INIT_I2C_LCD()
 //==========================================================
 bool Update_LCD(void *)
 {
-    // LINE 1  ==>   "230V 25A BATT: 24V"
-    sprintf(LCD_Line, "%3ldV  %2ldA   BATT:%2ldV",LCD_AC_Volts, LCD_AC_Amps, LCD_DC_Volts);
+    
+    //----------------+------------------+-
+    // LINE 1  ==>   "230V  25A   Batt:24V"
+    //----------------+------------------+-    
+    sprintf(LCD_Line, "%3ldV  %2ldA   Batt:%2ldV",LCD_AC_Volts, LCD_AC_Amps, LCD_DC_Volts);
     LCD.setCursor(0, 0); 
     LCD.print(LCD_Line);
    
-    // LINE 2
-    sprintf(LCD_Line, "                    ");
+    //----------------+------------------+-
+    // LINE 2  ==>   "Starter:OFF Fuel:OFF"
+    //----------------+------------------+-    
+    sprintf(LCD_Line, "Starter:%s Fuel:%s",(gSTARTER_RELAY_ON) ? "ON " : "OFF",(gFUEL_RELAY_ON) ? "ON " : "OFF");
     LCD.setCursor(0, 1); 
     LCD.print(LCD_Line);
  
-    // LINE 3
-    sprintf(LCD_Line, "                    ");
+    //----------------+------------------+-
+    // LINE 3  ==>   "Safe:OFF Request:OFF"
+    //----------------+------------------+-  
+    sprintf(LCD_Line, "Safe:%s Request:%s",(gSAFETY_RELAY_ON) ? "ON " : "OFF",(gSYSTEM_START_REQUEST) ? "ON " : "OFF");
     LCD.setCursor(0, 2); 
     LCD.print(LCD_Line);
   

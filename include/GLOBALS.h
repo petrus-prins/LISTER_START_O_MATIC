@@ -26,6 +26,20 @@
     extern volatile long Fail_Count;                   // STARTUP_SHUTDOWN FAIL COUNTER
     extern volatile long Total_System_Starts;          // 
  
+    //========================
+    //  GLOBAL RELAY STATES
+    //========================
+    extern volatile bool gSTARTER_RELAY_ON;
+    extern volatile bool gFUEL_RELAY_ON;
+    extern volatile bool gSAFETY_RELAY_ON;
+    extern volatile bool gSYSTEM_START_REQUEST;
+
+    //========================
+    //  GLOBAL SYSTEM STATE
+    //========================
+    extern volatile int gSYSTEM_STATE;
+
+
 
 
     ///==========================ANALOG PINS============================================
@@ -45,7 +59,6 @@
     extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Raw;
     extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Min;
     extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
-
     extern statistic::Statistic<float, uint32_t, true> DC_VOLTS_Raw;
     extern statistic::Statistic<float, uint32_t, true> DC_VOLTS_Max;
 

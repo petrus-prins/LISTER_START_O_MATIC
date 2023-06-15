@@ -31,3 +31,19 @@ statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
 statistic::Statistic<float, uint32_t, true> DC_VOLTS_Raw;
 statistic::Statistic<float, uint32_t, true> DC_VOLTS_Max;
 
+
+
+    //========================
+    //  GLOBAL RELAY STATES
+    //========================
+    volatile bool gSTARTER_RELAY_ON     = false;               // True when relay is ON
+    volatile bool gFUEL_RELAY_ON        = false;               // True when relay is ON
+    volatile bool gSAFETY_RELAY_ON      = false;               // True when relay is ON
+    volatile bool gSYSTEM_START_REQUEST = false;               // True when System_Start_Request_Digital_Input is True.
+    
+    //========================
+    //  GLOBAL SYSTEM STATE
+    //========================
+    volatile int gSYSTEM_STATE = 0;
+
+
