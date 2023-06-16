@@ -14,7 +14,7 @@ Timer <1, micros> ADC_Update_Timer;         // create a timer with 1 task and mi
 //====================================
 void INIT_Timers()
 {
-    LCD_Update_Timer.every(1000000,     Update_LCD);                     // 1000000 = 1 second
+    LCD_Update_Timer.every(1000000,      Update_LCD);                     // 1000000 = 1 second
     ADC_Update_Timer.every(1000000/1000, Update_ALL_ADC_Values);         // 1/1000 of a second 
 }
 
@@ -45,6 +45,7 @@ void loop()
      LCD_DC_Volts = random(9,28);
      LCD_AC_Volts = random(220, 240);  
      LCD_AC_Amps  = random(0, 301)/10; 
+     gSYSTEM_STATE = random(0,59)/10;
      //....    
 }
 
