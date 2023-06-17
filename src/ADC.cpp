@@ -25,17 +25,17 @@ void INIT_ADC_Stats()
 
 void RESET_AC_Voltage_Stats()
 {
-    AC_VOLTS_Raw.clear();
-    AC_VOLTS_Min.clear();
-    AC_VOLTS_Max.clear();
+    gAC_VOLTS_Raw.clear();
+    gAC_VOLTS_Min.clear();
+    gAC_VOLTS_Max.clear();
 }
 
 
 
 void RESET_DC_Voltage_Stats()
 {
-    DC_VOLTS_Raw.clear();
-    DC_VOLTS_Max.clear();
+    gDC_VOLTS_Raw.clear();
+    gDC_VOLTS_Max.clear();
 }
 
 
@@ -66,17 +66,17 @@ void Update_ADC_220VAC_VOLTAGE_Stats(void)
 {
     // AC VOLTAGE 
     float AC_Voltage = 0;
-    AC_VOLTS_Raw.add(analogRead(AC_VOLTAGE_AI_Pin));
-    if (AC_VOLTS_Raw.count() > 100)                               // Take 100 Samples then start guessing min and max from them
+    gAC_VOLTS_Raw.add(analogRead(AC_VOLTAGE_AI_Pin));
+    if (gAC_VOLTS_Raw.count() > 100)                               // Take 100 Samples then start guessing min and max from them
     {
-        AC_VOLTS_Min.add(AC_VOLTS_Raw.minimum());                            
-        AC_VOLTS_Max.add(AC_VOLTS_Raw.maximum());
+        gAC_VOLTS_Min.add(gAC_VOLTS_Raw.minimum());                            
+        gAC_VOLTS_Max.add(gAC_VOLTS_Raw.maximum());
     } 
     
-    if (AC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
+    if (gAC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
     {
-        AC_Voltage = Calculate_Real_AC_Voltage(AC_VOLTS_Raw.maximum(),AC_VOLTS_Raw.minimum());
-        LCD_AC_Volts = (long) AC_Voltage;
+        AC_Voltage = Calculate_Real_AC_Voltage(gAC_VOLTS_Raw.maximum(),gAC_VOLTS_Raw.minimum());
+        gLCD_AC_Volts = (long) AC_Voltage;
         RESET_AC_Voltage_Stats();                                 // Kill all stats. 
     }
 }
@@ -89,20 +89,20 @@ void Update_ADC_220VAC_VOLTAGE_Stats(void)
 void Update_ADC_24VDC_Stats(void)
 { 
     float local_DC_Voltage = 0;
-    DC_VOLTS_Raw.add(analogRead(DC_VOLTAGE_AI_Pin));
+    gDC_VOLTS_Raw.add(analogRead(DC_VOLTAGE_AI_Pin));
     
-    if (DC_VOLTS_Raw.count() > 100)                               // 500 Samples should be enough for us to calculate voltage.                   
+    if (gDC_VOLTS_Raw.count() > 100)                               // 500 Samples should be enough for us to calculate voltage.                   
     {
-         DC_VOLTS_Max.add(DC_VOLTS_Raw.maximum());
+         gDC_VOLTS_Max.add(gDC_VOLTS_Raw.maximum());
     }
 
-    if (DC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
+    if (gDC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
      {
-        local_DC_Voltage = DC_VOLTS_Max.average();
+        local_DC_Voltage = gDC_VOLTS_Max.average();
         local_DC_Voltage = (local_DC_Voltage*5.0/1024.0)*11.2 +0.62;   // Protecton Diode offset is 0.62 volt.
         if (local_DC_Voltage < 0.7) {local_DC_Voltage = 0.0;}              // Diode drop
         if (local_DC_Voltage > 99.0) {local_DC_Voltage = 99.0;}
-        LCD_DC_Volts =  (long) local_DC_Voltage;            
+        gLCD_DC_Volts =  (long) local_DC_Voltage;            
         RESET_DC_Voltage_Stats();                                  // Reset 24V stats.
      }
                    

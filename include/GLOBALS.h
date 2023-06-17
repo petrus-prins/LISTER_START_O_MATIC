@@ -11,16 +11,22 @@
     #include <math.h>
     #include <LiquidCrystal_PCF8574.h>
     #include <EPROM.h>
+    #include <YA_FSM.h>
+    #include <TIMERS.h>
     
     
-    //===============
-    // LCD VARIABLES
-    //===============
-    extern LiquidCrystal_PCF8574 LCD;             // set the LCD address to 0x27 for a 16 chars and 2 line display
-    extern int  LCD_Present;
-    extern volatile long LCD_AC_Volts;
-    extern volatile long LCD_AC_Amps;
-    extern volatile long LCD_DC_Volts;                //  
+    //========================
+    //         TIMERS
+    //========================
+    extern Timer <1, micros> gLCD_Update_Timer;         // create a timer with 1 task and microsecond resolution
+    extern Timer <1, micros> gADC_Update_Timer;         
+    
+    //========================
+    //     LCD VARIABLES
+    //========================
+    extern volatile long gLCD_AC_Volts;
+    extern volatile long gLCD_AC_Amps;
+    extern volatile long gLCD_DC_Volts;                //  
     extern volatile long Fail_Count;                   // STARTUP_SHUTDOWN FAIL COUNTER
     extern volatile long Total_System_Starts;          // 
  
@@ -37,28 +43,14 @@
     //========================
     extern volatile int gSYSTEM_STATE;
 
-
-
-
-    ///==========================ANALOG PINS============================================
-   // extern int AC_VOLTAGE_AI_Pin; // =  PIN_A0;    
-   // extern int AC_CURRENT_AI_Pin; // =  PIN_A1;     
-    //=================================================================================
-
-
-
-
-
-    // Live Stats 
-   // extern volatile float AC_Voltage;
-   //  extern volatile float RMS_Voltage;
-
-    extern int Voltage_Samples_Taken;
-    extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Raw;
-    extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Min;
-    extern statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
-    extern statistic::Statistic<float, uint32_t, true> DC_VOLTS_Raw;
-    extern statistic::Statistic<float, uint32_t, true> DC_VOLTS_Max;
+    //========================
+    //   Live Voltage Stats
+    //========================
+    extern statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Raw;
+    extern statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Min;
+    extern statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Max;
+    extern statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Raw;
+    extern statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Max;
 
 
 #endif

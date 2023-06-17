@@ -1,37 +1,18 @@
 #include <GLOBALS.h>
-#include <LiquidCrystal_PCF8574.h>
 
 
-//===============================LCD ============================================
-     int  LCD_Present = 0;
-     char LCD_Buffer[21];                         // String Buffer For LCD Use
-     char LCD_Lines[4][20];                       // 4 lines of 20 character buffer
-     LiquidCrystal_PCF8574 LCD(0x27);             // set the LCD address to 0x27 for a 16 chars and 2 line display
-//=================================================================================
+    //========================
+    //      TIMERS
+    //========================
+    Timer <1, micros> gLCD_Update_Timer;         // create a timer with 1 task and microsecond resolution
+    Timer <1, micros> gADC_Update_Timer;         // create a timer with 1 task and microsecond resolution
 
-
-// 220V
-volatile long LCD_AC_Volts = 0;
-volatile long LCD_AC_Amps  = 0;
-// 24VDC
-volatile long LCD_DC_Volts  = 0;
-
-//==========================240V STATS =============================================
-volatile float AC_Voltage = 0;                     // Expecting 220-240VAC
-volatile float DC_Voltage = 0;                     // Expecting 24-28VDC
-
-
-//volatile float RMS_Voltage = 0;
-
-//220_VAC STATS
-statistic::Statistic<float, uint32_t, true> AC_VOLTS_Raw;
-statistic::Statistic<float, uint32_t, true> AC_VOLTS_Min;
-statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
-//24_VDC STATS
-statistic::Statistic<float, uint32_t, true> DC_VOLTS_Raw;
-statistic::Statistic<float, uint32_t, true> DC_VOLTS_Max;
-
-
+    //========================
+    // LCD VARIABLES
+    //========================
+     volatile long gLCD_AC_Volts = 0;                        // Used by LCD and DIO
+     volatile long gLCD_AC_Amps  = 0;
+     volatile long gLCD_DC_Volts  = 0;
 
     //========================
     //  GLOBAL RELAY STATES
@@ -46,4 +27,12 @@ statistic::Statistic<float, uint32_t, true> DC_VOLTS_Max;
     //========================
     volatile int gSYSTEM_STATE = 0;
 
+    //========================
+    // Live Voltage Stats
+    //========================
+    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Raw;
+    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Min;
+    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Max;
+    statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Raw;
+    statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Max;
 

@@ -8,8 +8,10 @@
 //             I2C_SCL (PC5) AT328P_PIN_28 (ADC5)
 //========================================================
 
-
+LiquidCrystal_PCF8574 LCD(0x27);             // set the LCD address to 0x27 for a 16 chars and 2 line display
 char LCD_Line[]     = "                     ";            // 21 chars
+int  LCD_Present = 0;
+
 
 //====================================
 //         INIT LCD      
@@ -51,52 +53,58 @@ void INIT_I2C_LCD()
 //==========================================================
 bool Update_LCD(void *)
 {
-    //----------------+------------------+-
-    // LINE 1  ==>   "230V  25A   Batt:24V"
-    //----------------+------------------+-    
-    sprintf(LCD_Line, "%3ldV  %2ldA   Batt:%2ldV",LCD_AC_Volts, LCD_AC_Amps, LCD_DC_Volts);
-    LCD.setCursor(0, 0); 
-    LCD.print(LCD_Line);
-   
-    //----------------+------------------+-
-    // LINE 2  ==>   "Starter:OFF Fuel:OFF"
-    //----------------+------------------+-    
-    sprintf(LCD_Line, "Starter:%s Fuel:%s",(gSTARTER_RELAY_ON) ? "ON " : "OFF",(gFUEL_RELAY_ON) ? "ON " : "OFF");
-    LCD.setCursor(0, 1); 
-    LCD.print(LCD_Line);
- 
-    //----------------+------------------+-
-    // LINE 3  ==>   "Safe:OFF Request:OFF"
-    //----------------+------------------+-  
-    sprintf(LCD_Line, "Safe:%s Request:%s",(gSAFETY_RELAY_ON) ? "ON " : "OFF",(gSYSTEM_START_REQUEST) ? "ON " : "OFF");
-    LCD.setCursor(0, 2); 
-    LCD.print(LCD_Line);
-  
-    //----------------+------------------+-
-    // LINE 4  ==>   "S1: DISOVERY MODE"
-    //----------------+------------------+-  
-    switch(gSYSTEM_STATE) 
-    {
-        case 1:             // +------------------+
-            sprintf(LCD_Line, "S1: DISCOVERY MODE  ");
-        break;
-        case 2:
-            sprintf(LCD_Line, "S2: ENGINE STARTING ");
-        break;
-        case 3:
-            sprintf(LCD_Line, "S3: ENGINE RUNNING  ");
-        break;
-        case 4:
-            sprintf(LCD_Line, "S4: ENGINE SHUTDOWN ");
-        break;
-        case 5:
-            sprintf(LCD_Line, "S5: SYSTEM SHUTDOWN ");
-        break;
-        default:
-            sprintf(LCD_Line, "S0: INIT            ");
-    }
+    if(LCD_Present == 1)                                       // LCD OK
+    { 
+    
+        //----------------+------------------+-
+        // LINE 1  ==>   "230V  25A   Batt:24V"
+        //----------------+------------------+-    
+        sprintf(LCD_Line, "%3ldV  %2ldA   Batt:%2ldV",gLCD_AC_Volts, gLCD_AC_Amps, gLCD_DC_Volts);
+        LCD.setCursor(0, 0); 
+        LCD.print(LCD_Line);
+    
+        //----------------+------------------+-
+        // LINE 2  ==>   "Starter:OFF Fuel:OFF"
+        //----------------+------------------+-    
+        sprintf(LCD_Line, "Starter:%s Fuel:%s",(gSTARTER_RELAY_ON) ? "ON " : "OFF",(gFUEL_RELAY_ON) ? "ON " : "OFF");
+        LCD.setCursor(0, 1); 
+        LCD.print(LCD_Line);
+    
+        //----------------+------------------+-
+        // LINE 3  ==>   "Safe:OFF Request:OFF"
+        //----------------+------------------+-  
+        sprintf(LCD_Line, "Safe:%s Request:%s",(gSAFETY_RELAY_ON) ? "ON " : "OFF",(gSYSTEM_START_REQUEST) ? "ON " : "OFF");
+        LCD.setCursor(0, 2); 
+        LCD.print(LCD_Line);
+    
+        //----------------+------------------+-
+        // LINE 4  ==>   "S1: DISOVERY MODE"
+        //----------------+------------------+-  
+        switch(gSYSTEM_STATE) 
+        {
+            case 1:             // +------------------+
+                sprintf(LCD_Line, "S1: DISCOVERY MODE  ");
+            break;
+            case 2:
+                sprintf(LCD_Line, "S2: ENGINE STARTING ");
+            break;
+            case 3:
+                sprintf(LCD_Line, "S3: ENGINE RUNNING  ");
+            break;
+            case 4:
+                sprintf(LCD_Line, "S4: ENGINE SHUTDOWN ");
+            break;
+            case 5:
+                sprintf(LCD_Line, "S5: SYSTEM SHUTDOWN ");
+            break;
+            default:
+                sprintf(LCD_Line, "S0: INIT            ");
+        }
 
-    LCD.setCursor(0, 3); 
-    LCD.print(LCD_Line);
+        LCD.setCursor(0, 3); 
+        LCD.print(LCD_Line);
+    
+    } //LCD OK
+    
     return true;                                               // Retun True if this function must be called next time by timer lbrary.
 }
