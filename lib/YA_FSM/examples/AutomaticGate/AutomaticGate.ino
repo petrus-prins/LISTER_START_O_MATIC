@@ -146,8 +146,6 @@ void onStateStopWait() {
   }  
 }
 
-
-
 // Setup the State Machine
 void setupStateMachine() {
   // Follow the order of defined enumeration for the state definition (will be used as index)

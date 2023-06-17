@@ -13,6 +13,7 @@
     #include <EPROM.h>
     #include <YA_FSM.h>
     #include <TIMERS.h>
+    #include <firetimer.h>
     
     
     //========================
@@ -41,7 +42,7 @@
     //========================
     //  GLOBAL SYSTEM STATE
     //========================
-    extern volatile int gSYSTEM_STATE;
+    extern volatile uint8_t gSYSTEM_STATE;
 
     //========================
     //   Live Voltage Stats

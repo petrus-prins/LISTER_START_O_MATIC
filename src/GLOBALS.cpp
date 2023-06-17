@@ -25,7 +25,7 @@
     //========================
     //  GLOBAL SYSTEM STATE
     //========================
-    volatile int gSYSTEM_STATE = 0;
+    volatile uint8_t gSYSTEM_STATE = 0;
 
     //========================
     // Live Voltage Stats
