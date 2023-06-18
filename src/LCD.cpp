@@ -59,7 +59,7 @@ bool Update_LCD(void *)
         //----------------+------------------+-
         // LINE 1  ==>   "230V  25A   Batt:24V"
         //----------------+------------------+-    
-        sprintf(LCD_Line, "%3ldV  %2ldA   Batt:%2ldV",gLCD_AC_Volts, gLCD_AC_Amps, gLCD_DC_Volts);
+        sprintf(LCD_Line, "%3ldV %2ldA   Batt: %2ldV",gLCD_AC_Volts, gLCD_AC_Amps, gLCD_DC_Volts);
         LCD.setCursor(0, 0); 
         LCD.print(LCD_Line);
     
