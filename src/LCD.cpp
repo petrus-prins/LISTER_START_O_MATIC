@@ -11,6 +11,7 @@
 LiquidCrystal_PCF8574 LCD(0x27);             // set the LCD address to 0x27 for a 16 chars and 2 line display
 char LCD_Line[]     = "                     ";            // 21 chars
 int  LCD_Present = 0;
+bool Blink_State = 0;
 
 
 //====================================
@@ -86,7 +87,7 @@ bool Update_LCD(void *)
                 sprintf(LCD_Line, "S1: DISCOVERY MODE  ");
             break;
             case 2:
-                sprintf(LCD_Line, "S2: ENGINE STARTING ");
+                (Blink_State)? sprintf(LCD_Line, "S2: ENGINE STARTING ") : sprintf(LCD_Line, "S2:                 "); Blink_State = !Blink_State;
             break;
             case 3:
                 sprintf(LCD_Line, "S3: ENGINE RUNNING  ");

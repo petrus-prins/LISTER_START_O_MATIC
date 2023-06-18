@@ -20,25 +20,19 @@ Input STATE_INPUT;        // Latest State Change Input
 
 
 
-FireTimer S0_Timer;
-FireTimer S1_Timer;
 
+FireTimer S1_DISCOVERY_MODE_Timer;
+FireTimer S2_ENGINE_STARTING_Timer;
+FireTimer S4_ENGINE_SHUTDOWN_Timer;
 
 
 //============================================================
 //                         S0_INIT
 //============================================================
-void onState_S0_INIT_Enter()                                              
-{
-    S0_Timer.start();
-}
 
-void onState_S0_INIT()                                                     // This callback function will be called continuously while state is active
+void onState_S0_INIT()                                                // This state is the default startup state.                                
 {
-    if(S0_Timer.fire()) 
-    { 
-        STATE_INPUT = Input::xDISCOVERY_MODE; 
-    }
+    STATE_INPUT = Input::xDISCOVERY_MODE; 
 }
 
 
@@ -47,20 +41,16 @@ void onState_S0_INIT()                                                     // Th
 //============================================================
 void onState_S1_DISCOVERY_MODE_Enter()
 {
-    S1_Timer.start();
+    S1_DISCOVERY_MODE_Timer.start();
 }
 
-void onState_S1_DISCOVERY_MODE()                                   
+void onState_S1_DISCOVERY_MODE()                                      // This callback function will be called continuously while state is active 
 {    
-    if(S1_Timer.fire()) 
+    if(S1_DISCOVERY_MODE_Timer.fire()) 
     { 
-        //STATE_INPUT = Input::xINIT; 
+        STATE_INPUT = Input::xSTART_ENGINE; 
     } 
-     // debug test code...
-    // gLCD_DC_Volts = random(9,28);
-    // gLCD_AC_Volts = random(220, 240);  
-    // gLCD_AC_Amps  = random(0, 301)/10; 
-     //....    
+  
 }
 
 
@@ -70,10 +60,15 @@ void onState_S1_DISCOVERY_MODE()
 //============================================================
 void onState_S2_ENGINE_STARTING_Enter()                                              
 {
+    S2_ENGINE_STARTING_Timer.start();
 }
 
 void onState_S2_ENGINE_STARTING()                                                    
 {
+      if(S2_ENGINE_STARTING_Timer.fire()) 
+    { 
+        STATE_INPUT = Input::xENGINE_RUNNING; 
+    }   
 }
 
 
@@ -89,6 +84,11 @@ void onState_S3_ENGINE_RUNNING_Enter()
 
 void onState_S3_ENGINE_RUNNING()                                                    
 {
+     // debug test code...
+     gLCD_DC_Volts = random(9,28);
+     gLCD_AC_Volts = random(220, 240);  
+     gLCD_AC_Amps  = random(0, 301)/10; 
+     //....  
 }
 
 
@@ -130,7 +130,7 @@ void INIT_STATE_MACHINE()
     //==========================   
     // Follow the order of defined enumeration for the state definition (will be used as index)
     //Add States                   => name,         timeout,       onEnter callback,                onState cb,           onLeave cb
-    STATE_MACHINE.AddState(stateName[S0_INIT]            ,  0,  onState_S0_INIT_Enter            ,  onState_S0_INIT            , nullptr);
+    STATE_MACHINE.AddState(stateName[S0_INIT]            ,  0,  nullptr                          ,  onState_S0_INIT            , nullptr);  // Default State when System Starts.
     STATE_MACHINE.AddState(stateName[S1_DISCOVERY_MODE]  ,  0,  onState_S1_DISCOVERY_MODE_Enter  ,  onState_S1_DISCOVERY_MODE  , nullptr);
     STATE_MACHINE.AddState(stateName[S2_ENGINE_STARTING] ,  0,  onState_S2_ENGINE_STARTING_Enter ,  onState_S2_ENGINE_STARTING , nullptr);
     STATE_MACHINE.AddState(stateName[S3_ENGINE_RUNNING]  ,  0,  onState_S3_ENGINE_RUNNING_Enter  ,  onState_S3_ENGINE_RUNNING  , nullptr);
@@ -141,7 +141,7 @@ void INIT_STATE_MACHINE()
     //       ADD NORMAL STATES
     //==========================   
     // Add transitions with related callback functions ( FROM, TO, Trigger)   
-    STATE_MACHINE.AddTransition(S0_INIT                  , S0_INIT             ,  [](){return (STATE_INPUT == xINIT);            });    // System boot initial state
+    STATE_MACHINE.AddTransition(S5_SYSTEM_SHUTDOWN       , S0_INIT             ,  [](){return (STATE_INPUT == xINIT);            });    // System boot initial state
     STATE_MACHINE.AddTransition(S0_INIT                  , S1_DISCOVERY_MODE   ,  [](){return (STATE_INPUT == xDISCOVERY_MODE);  });    // Check all system inputs - determine if engine is off
     STATE_MACHINE.AddTransition(S1_DISCOVERY_MODE        , S2_ENGINE_STARTING  ,  [](){return (STATE_INPUT == xSTART_ENGINE);    });    // Start Engine (takes 30s until full speed)
     STATE_MACHINE.AddTransition(S2_ENGINE_STARTING       , S3_ENGINE_RUNNING   ,  [](){return (STATE_INPUT == xENGINE_RUNNING);  });    // Assume Engine Running - check engine stats.
@@ -185,9 +185,9 @@ void setup()
     INIT_Timers();
     INIT_STATE_MACHINE();
 
-    S0_Timer.begin(3000);
-    S1_Timer.begin(3000);
-
+    S1_DISCOVERY_MODE_Timer.begin(5000);                
+    S2_ENGINE_STARTING_Timer.begin(25000);              // takes 25s for engine to start up
+    S4_ENGINE_SHUTDOWN_Timer.begin(30000);              // Takes 30s for engine to stop turning
 }
 
 
