@@ -2,11 +2,31 @@
 
 
 
-int AC_VOLTAGE_AI_Pin  =  PIN_A0;    
-int AC_CURRENT_AI_Pin  =  PIN_A1;  
-int DC_VOLTAGE_AI_Pin  =  PIN_A3;
+int AC_VOLTAGE_AI_Pin       =  PIN_A0;    
+int AC_CURRENT_AI_Pin       =  PIN_A1;  
+int CURRENT_CUTOFF_AI_Pin   =  PIN_A2;                     // Cut_off_Signal when power draw is less than 40 Watts.
+int DC_VOLTAGE_AI_Pin       =  PIN_A3;
 
 float VREF = 5.0;
+
+    
+//========================
+// Live Voltage Stats
+//========================    
+    
+//AC VOLTS
+statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Raw;
+statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Min;
+statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Max;
+//DC VOLTS
+statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Raw;
+statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Max;
+//AC CURRENT
+statistic::Statistic<float, uint32_t, true> CUTTOFF_Raw;
+statistic::Statistic<float, uint32_t, true> CUTTOFF_Max;
+
+//volatile long CUTOFF_ADC_Value_mV = 0;   
+
 
 //=========================================================================
 //                           INIT ANALOG PIN MODES      
@@ -14,15 +34,16 @@ float VREF = 5.0;
 void INIT_ANALOG_PIN_Modes()
 {
     pinMode(AC_VOLTAGE_AI_Pin, INPUT);
+    pinMode(AC_CURRENT_AI_Pin, INPUT);
+    pinMode(CURRENT_CUTOFF_AI_Pin, INPUT);
+    pinMode(DC_VOLTAGE_AI_Pin, INPUT);
 }
 
 
-void INIT_ADC_Stats()
-{
-    RESET_AC_Voltage_Stats();
-}
 
 
+
+// RESET ACV
 void RESET_AC_Voltage_Stats()
 {
     gAC_VOLTS_Raw.clear();
@@ -30,13 +51,29 @@ void RESET_AC_Voltage_Stats()
     gAC_VOLTS_Max.clear();
 }
 
-
-
+// RESET DCV
 void RESET_DC_Voltage_Stats()
 {
     gDC_VOLTS_Raw.clear();
     gDC_VOLTS_Max.clear();
 }
+
+// RESET CUTOFF
+void RESET_CUTOFF_Stats()
+{
+    CUTTOFF_Raw.clear();
+    CUTTOFF_Max.clear();
+}
+
+
+// CALLED BY SETUP
+void INIT_ADC_Stats()
+{
+    RESET_AC_Voltage_Stats();
+    RESET_DC_Voltage_Stats();
+    RESET_CUTOFF_Stats();
+}
+
 
 
 
@@ -91,7 +128,7 @@ void Update_ADC_24VDC_Stats(void)
     float local_DC_Voltage = 0;
     gDC_VOLTS_Raw.add(analogRead(DC_VOLTAGE_AI_Pin));
     
-    if (gDC_VOLTS_Raw.count() > 100)                               // 500 Samples should be enough for us to calculate voltage.                   
+    if (gDC_VOLTS_Raw.count() > 100)                               // 100 samples are can start giving proper max stats.                  
     {
          gDC_VOLTS_Max.add(gDC_VOLTS_Raw.maximum());
     }
@@ -99,14 +136,48 @@ void Update_ADC_24VDC_Stats(void)
     if (gDC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
      {
         local_DC_Voltage = gDC_VOLTS_Max.average();
-        local_DC_Voltage = (local_DC_Voltage*5.0/1024.0)*11.2 +0.62;   // Protecton Diode offset is 0.62 volt.
+        local_DC_Voltage = (local_DC_Voltage*VREF/1024.0)*11.2 +0.62;   // Protecton Diode offset is 0.62 volt.
         if (local_DC_Voltage < 0.7) {local_DC_Voltage = 0.0;}              // Diode drop
         if (local_DC_Voltage > 99.0) {local_DC_Voltage = 99.0;}
         gLCD_DC_Volts =  (long) local_DC_Voltage;            
         RESET_DC_Voltage_Stats();                                  // Reset 24V stats.
-     }
-                   
+     }                 
 }
+
+
+
+
+//=============================================================
+//                  CURRENT CUTOFF STATS 
+//==============================================================
+void Update_CUTOFF_Stats(void)
+{ 
+    
+    float local_CUTOFF_Voltage = 0;
+
+    CUTTOFF_Raw.add(analogRead(CURRENT_CUTOFF_AI_Pin));
+    if (CUTTOFF_Raw.count() > 100)                                                 
+    {
+         CUTTOFF_Max.add(CUTTOFF_Raw.maximum());
+    }
+
+    if (CUTTOFF_Raw.count() > 500)             
+     {
+        local_CUTOFF_Voltage = CUTTOFF_Max.average();
+        local_CUTOFF_Voltage = (local_CUTOFF_Voltage*VREF/1024.0);         
+        if (local_CUTOFF_Voltage < 0.0) {local_CUTOFF_Voltage = 0.0;}           
+        if (local_CUTOFF_Voltage >= VREF) {local_CUTOFF_Voltage = VREF;}
+        gCUTOFF_ADC_Value_mV =  (long) (local_CUTOFF_Voltage*1000);
+        gZERO_CURRENT_TRIGGER_ACTIVE  =   (gCUTOFF_ADC_Value_mV >= 4200)? true : false;           // =4800mV when no current is drawn from system; 3300mV when 40Watt@220V is used. 
+        RESET_CUTOFF_Stats();
+     }                 
+}
+
+
+
+
+
+
 
 
 
@@ -118,8 +189,9 @@ bool Update_ALL_ADC_Values(void *)
 {   
     Update_ADC_220VAC_VOLTAGE_Stats();
     Update_ADC_24VDC_Stats();
+    Update_CUTOFF_Stats();
     // TODO: Update_ADC_220VAC_AMPS_Stats
-    // TODO: Update_ADC_220VAC_CURRENT_SwitchOff_Trigger
+
     return true;                                                    // Retun True if this function must be called next time by timer lbrary.
 }
 

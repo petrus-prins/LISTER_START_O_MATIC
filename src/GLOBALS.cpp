@@ -10,9 +10,16 @@
     //========================
     // LCD VARIABLES
     //========================
-     volatile long gLCD_AC_Volts = 0;                        // Used by LCD and DIO
-     volatile long gLCD_AC_Amps  = 0;
-     volatile long gLCD_DC_Volts  = 0;
+     volatile long gLCD_AC_Volts     = 0;                            // Used by LCD and DIO
+     volatile long gLCD_AC_Amps      = 0;
+     volatile long gLCD_DC_Volts     = 0;
+   
+
+    //==============================
+    // NO CURRENT CUTOFF DETECTION
+    //==============================
+     volatile bool gZERO_CURRENT_TRIGGER_ACTIVE = true;             // Flag indicating that no AC current is used any more - i.e. OK to Switch Engine Off.
+     volatile long gCUTOFF_ADC_Value_mV = 0; 
 
     //========================
     //  GLOBAL RELAY STATES
@@ -30,9 +37,9 @@
     //========================
     // Live Voltage Stats
     //========================
-    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Raw;
-    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Min;
-    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Max;
-    statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Raw;
-    statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Max;
+//    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Raw;
+//    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Min;
+//    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Max;
+//    statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Raw;
+//    statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Max;
 

@@ -27,10 +27,18 @@
     //========================
     extern volatile long gLCD_AC_Volts;
     extern volatile long gLCD_AC_Amps;
-    extern volatile long gLCD_DC_Volts;                //  
-    extern volatile long Fail_Count;                   // STARTUP_SHUTDOWN FAIL COUNTER
-    extern volatile long Total_System_Starts;          // 
- 
+    extern volatile long gLCD_DC_Volts;                  
+    extern volatile long Fail_Count;                   //   STARTUP_SHUTDOWN FAIL COUNTER (increases if system reset)
+    extern volatile long Total_System_Starts;          //   Increases by 1 on every system bootup
+    
+    //==============================
+    // NO CURRENT CUTOFF DETECTION
+    //==============================
+    extern volatile bool gZERO_CURRENT_TRIGGER_ACTIVE;      //  True when gCUTOFF_ADC_Value_mV is >= 4.2V
+    extern volatile long gCUTOFF_ADC_Value_mV;               
+  
+
+
     //========================
     //  GLOBAL RELAY STATES
     //========================
@@ -44,14 +52,7 @@
     //========================
     extern volatile uint8_t gSYSTEM_STATE;
 
-    //========================
-    //   Live Voltage Stats
-    //========================
-    extern statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Raw;
-    extern statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Min;
-    extern statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Max;
-    extern statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Raw;
-    extern statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Max;
+
 
 
 #endif

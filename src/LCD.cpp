@@ -49,10 +49,15 @@ void INIT_I2C_LCD()
 }
 
 
+
+
+
+
+
 //==========================================================
 //         CONTINUOUSLY UPDATE SYSTEM STATS ON LCD   
 //==========================================================
-bool Update_LCD(void *)
+void Update_LCD__NORMAL()
 {
     if(LCD_Present == 1)                                       // LCD OK
     { 
@@ -106,6 +111,52 @@ bool Update_LCD(void *)
         LCD.print(LCD_Line);
     
     } //LCD OK
+}   // LCD NORMAL
+
+
+
+void Update_LCD__DEBUG()
+{
+    if(LCD_Present == 1)                                       // LCD OK
+    { 
+        //----------------+------------------+-
+        // LINE 1  ==>   "230V  25A   Batt:24V"
+        //----------------+------------------+-    
+        sprintf(LCD_Line, "%3ldV %2ldA   Batt: %2ldV",gLCD_AC_Volts, gLCD_AC_Amps, gLCD_DC_Volts);
+        LCD.setCursor(0, 0); 
+        LCD.print(LCD_Line);
     
+        //----------------+------------------+-
+        // LINE 2  ==>   "Starter:OFF Fuel:OFF"
+        //----------------+------------------+-    
+        sprintf(LCD_Line, "Starter:%s Fuel:%s",(gSTARTER_RELAY_ON) ? "ON " : "OFF",(gFUEL_RELAY_ON) ? "ON " : "OFF");
+        LCD.setCursor(0, 1); 
+        LCD.print(LCD_Line);
+    
+        //----------------+------------------+-
+        // LINE 3  ==>   "Safe:OFF Request:OFF"
+        //----------------+------------------+-  
+        sprintf(LCD_Line, "Safe:%s Request:%s",(gSAFETY_RELAY_ON) ? "ON " : "OFF",(gSYSTEM_START_REQUEST) ? "ON " : "OFF");
+        LCD.setCursor(0, 2); 
+        LCD.print(LCD_Line);
+    
+        //----------------+------------------+-
+        // LINE 4  ==>   "
+        //----------------+------------------+-  
+        sprintf(LCD_Line, "CutOff: %4ld [%s]",gCUTOFF_ADC_Value_mV,(gZERO_CURRENT_TRIGGER_ACTIVE)? "True ":"False");
+        LCD.setCursor(0, 3); 
+        LCD.print(LCD_Line);
+    }   // Present
+}
+
+
+//==========================================================
+//         SELECT NORMAL OR DEBUG LCD DATA  
+//==========================================================
+bool Update_LCD(void *)
+{
+    bool LCD_DEBUG = true;
+    (LCD_DEBUG)? Update_LCD__DEBUG() : Update_LCD__NORMAL();
     return true;                                               // Retun True if this function must be called next time by timer lbrary.
 }
+
