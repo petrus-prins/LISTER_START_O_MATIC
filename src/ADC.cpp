@@ -15,15 +15,20 @@ float VREF = 5.0;
 //========================    
     
 //AC VOLTS
-statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Raw;
-statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Min;
-statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Max;
+statistic::Statistic<float, uint32_t, true> AC_VOLTS_Raw;
+statistic::Statistic<float, uint32_t, true> AC_VOLTS_Min;
+statistic::Statistic<float, uint32_t, true> AC_VOLTS_Max;
 //DC VOLTS
-statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Raw;
-statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Max;
-//AC CURRENT
+statistic::Statistic<float, uint32_t, true> DC_VOLTS_Raw;
+statistic::Statistic<float, uint32_t, true> DC_VOLTS_Max;
+//AC CUTOFF
 statistic::Statistic<float, uint32_t, true> CUTTOFF_Raw;
 statistic::Statistic<float, uint32_t, true> CUTTOFF_Max;
+
+//AC AMPS
+statistic::Statistic<float, uint32_t, true> AC_AMPS_Raw;
+statistic::Statistic<float, uint32_t, true> AC_AMPS_Max;
+statistic::Statistic<float, uint32_t, true> AC_AMPS_Min;
 
 //volatile long CUTOFF_ADC_Value_mV = 0;   
 
@@ -46,16 +51,15 @@ void INIT_ANALOG_PIN_Modes()
 // RESET ACV
 void RESET_AC_Voltage_Stats()
 {
-    gAC_VOLTS_Raw.clear();
-    gAC_VOLTS_Min.clear();
-    gAC_VOLTS_Max.clear();
-}
+    AC_VOLTS_Raw.clear();
+    AC_VOLTS_Max.clear();
+    AC_VOLTS_Min.clear();}
 
 // RESET DCV
 void RESET_DC_Voltage_Stats()
 {
-    gDC_VOLTS_Raw.clear();
-    gDC_VOLTS_Max.clear();
+    DC_VOLTS_Raw.clear();
+    DC_VOLTS_Max.clear();
 }
 
 // RESET CUTOFF
@@ -65,6 +69,16 @@ void RESET_CUTOFF_Stats()
     CUTTOFF_Max.clear();
 }
 
+// RESET CUTOFF
+void RESET_AC_AMPS_Stats()
+{
+    AC_AMPS_Raw.clear();
+    AC_AMPS_Max.clear();
+    AC_AMPS_Min.clear();   
+}
+
+
+
 
 // CALLED BY SETUP
 void INIT_ADC_Stats()
@@ -72,6 +86,7 @@ void INIT_ADC_Stats()
     RESET_AC_Voltage_Stats();
     RESET_DC_Voltage_Stats();
     RESET_CUTOFF_Stats();
+    RESET_AC_AMPS_Stats();
 }
 
 
@@ -96,23 +111,46 @@ float Calculate_Real_AC_Voltage(float ADC_Max, float ADC_Min)
 
 
 
+//===============================================================================
+//             Calculate AC LN voltage based on max and min ADC values.
+//===============================================================================
+float Calculate_Real_AC_AMPS(float ADC_Max, float ADC_Min)
+{
+    float fval = 0;
+    fval = fabs(ADC_Max-ADC_Min);           //  ADC difference in max and min
+    fval = fval * VREF;                     // * 5.00V
+    fval = fval / 1024.0;                   //
+    fval = fval * 2.0;                      // Scaling factor to get AC Amps
+    if (fval < 0.1) {fval = 0.0;}        
+     if (fval > 99) {fval = 99;}          
+    return fval;
+}
+
+
+
+
+
+
+
+
+
 //=============================================================
-//                  AC220V
+//                  CAPTURE 220VAC STATS
 //==============================================================
 void Update_ADC_220VAC_VOLTAGE_Stats(void)
 {
     // AC VOLTAGE 
     float AC_Voltage = 0;
-    gAC_VOLTS_Raw.add(analogRead(AC_VOLTAGE_AI_Pin));
-    if (gAC_VOLTS_Raw.count() > 100)                               // Take 100 Samples then start guessing min and max from them
+    AC_VOLTS_Raw.add(analogRead(AC_VOLTAGE_AI_Pin));
+    if (AC_VOLTS_Raw.count() > 100)                               // Take 100 Samples then start guessing min and max from them
     {
-        gAC_VOLTS_Min.add(gAC_VOLTS_Raw.minimum());                            
-        gAC_VOLTS_Max.add(gAC_VOLTS_Raw.maximum());
+        AC_VOLTS_Max.add(AC_VOLTS_Raw.maximum());
+        AC_VOLTS_Min.add(AC_VOLTS_Raw.minimum());                            
     } 
     
-    if (gAC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
+    if (AC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
     {
-        AC_Voltage = Calculate_Real_AC_Voltage(gAC_VOLTS_Raw.maximum(),gAC_VOLTS_Raw.minimum());
+        AC_Voltage = Calculate_Real_AC_Voltage(AC_VOLTS_Max.average(),AC_VOLTS_Min.average());
         gLCD_AC_Volts = (long) AC_Voltage;
         RESET_AC_Voltage_Stats();                                 // Kill all stats. 
     }
@@ -121,25 +159,25 @@ void Update_ADC_220VAC_VOLTAGE_Stats(void)
 
 
 //=============================================================
-//                     DC24V 
+//                     CAPTURE DC24V STATS
 //==============================================================
 void Update_ADC_24VDC_Stats(void)
 { 
     float local_DC_Voltage = 0;
-    gDC_VOLTS_Raw.add(analogRead(DC_VOLTAGE_AI_Pin));
+    DC_VOLTS_Raw.add(analogRead(DC_VOLTAGE_AI_Pin));
     
-    if (gDC_VOLTS_Raw.count() > 100)                               // 100 samples are can start giving proper max stats.                  
+    if (DC_VOLTS_Raw.count() > 100)                               // 100 samples are can start giving proper max stats.                  
     {
-         gDC_VOLTS_Max.add(gDC_VOLTS_Raw.maximum());
+         DC_VOLTS_Max.add(DC_VOLTS_Raw.maximum());
     }
 
-    if (gDC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
+    if (DC_VOLTS_Raw.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
      {
-        local_DC_Voltage = gDC_VOLTS_Max.average();
+        local_DC_Voltage = DC_VOLTS_Max.average();
         local_DC_Voltage = (local_DC_Voltage*VREF/1024.0)*11.2 +0.62;   // Protecton Diode offset is 0.62 volt.
         if (local_DC_Voltage < 0.7) {local_DC_Voltage = 0.0;}              // Diode drop
         if (local_DC_Voltage > 99.0) {local_DC_Voltage = 99.0;}
-        gLCD_DC_Volts =  (long) local_DC_Voltage;            
+        gLCD_DC_MilliVolts =  (long) local_DC_Voltage*1000;            
         RESET_DC_Voltage_Stats();                                  // Reset 24V stats.
      }                 
 }
@@ -148,7 +186,7 @@ void Update_ADC_24VDC_Stats(void)
 
 
 //=============================================================
-//                  CURRENT CUTOFF STATS 
+//                  CAPTURE CURRENT CUTOFF STATS 
 //==============================================================
 void Update_CUTOFF_Stats(void)
 { 
@@ -177,6 +215,38 @@ void Update_CUTOFF_Stats(void)
 
 
 
+//=============================================================
+//                CAPTURE AC AMP STATS
+//==============================================================
+void Update_AC_AMPS_Stats(void)
+{ 
+    float local_AC_AMPS = 0;
+
+    AC_AMPS_Raw.add(analogRead(AC_CURRENT_AI_Pin));
+    if (AC_AMPS_Raw.count() > 100)                               // Take 100 Samples then start guessing min and max from them
+    {
+        AC_AMPS_Max.add(AC_AMPS_Raw.maximum());
+        AC_AMPS_Min.add(AC_AMPS_Raw.minimum());   
+    } 
+    
+    if (AC_AMPS_Max.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
+    {
+        local_AC_AMPS = Calculate_Real_AC_AMPS(AC_AMPS_Max.average(),AC_AMPS_Min.average());
+        gLCD_AC_MilliAmps = (long) (local_AC_AMPS * 1000);
+        RESET_AC_AMPS_Stats();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -190,8 +260,7 @@ bool Update_ALL_ADC_Values(void *)
     Update_ADC_220VAC_VOLTAGE_Stats();
     Update_ADC_24VDC_Stats();
     Update_CUTOFF_Stats();
-    // TODO: Update_ADC_220VAC_AMPS_Stats
-
+    Update_AC_AMPS_Stats();
     return true;                                                    // Retun True if this function must be called next time by timer lbrary.
 }
 

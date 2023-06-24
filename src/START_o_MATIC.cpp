@@ -85,9 +85,9 @@ void onState_S3_ENGINE_RUNNING_Enter()
 void onState_S3_ENGINE_RUNNING()                                                    
 {
      // debug test code...
-     gLCD_DC_Volts = random(9,28);
+     gLCD_DC_MilliVolts = random(9000,28000);
      gLCD_AC_Volts = random(220, 240);  
-     gLCD_AC_Amps  = random(0, 301)/10; 
+   //  gLCD_AC_Amps  = random(0, 301)/10; 
      //....  
 }
 
@@ -185,7 +185,7 @@ void setup()
     INIT_Timers();
     INIT_STATE_MACHINE();
 
-    S1_DISCOVERY_MODE_Timer.begin(5000);                
+    S1_DISCOVERY_MODE_Timer.begin(10000);                
     S2_ENGINE_STARTING_Timer.begin(25000);              // takes 25s for engine to start up
     S4_ENGINE_SHUTDOWN_Timer.begin(30000);              // Takes 30s for engine to stop turning
 }

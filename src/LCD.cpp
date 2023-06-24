@@ -59,13 +59,22 @@ void INIT_I2C_LCD()
 //==========================================================
 void Update_LCD__NORMAL()
 {
+    
     if(LCD_Present == 1)                                       // LCD OK
     { 
-    
+        float A = 0;     // Amps
+        float V = 0;     // Volts
         //----------------+------------------+-
         // LINE 1  ==>   "230V  25A   Batt:24V"
         //----------------+------------------+-    
-        sprintf(LCD_Line, "%3ldV %2ldA   Batt: %2ldV",gLCD_AC_Volts, gLCD_AC_Amps, gLCD_DC_Volts);
+        //sprintf(LCD_Line, "%3ldV %2ldA   Batt: %2ldV",gLCD_AC_Volts, gLCD_AC_MilliAmps/1000, gLCD_DC_Volts);
+        A = (float)gLCD_AC_MilliAmps/1000.0;
+        V = (float)gLCD_DC_MilliVolts/1000.0;
+        if (A >= 9.1)
+        {
+              sprintf(LCD_Line, "%3ldV 10.+A Bat:%2d.%1dV",gLCD_AC_Volts, (int)V, (int)(V*10)%10); 
+        } 
+        else  sprintf(LCD_Line, "%3ldV %2d.%1dA Bat:%2d.%1dV",gLCD_AC_Volts, (int)A, (int)(A*10)%10, (int)V, (int)(V*10)%10);
         LCD.setCursor(0, 0); 
         LCD.print(LCD_Line);
     
@@ -117,26 +126,37 @@ void Update_LCD__NORMAL()
 
 void Update_LCD__DEBUG()
 {
+    float A = 0;     // Amps
+    float V = 0;     // Volts
     if(LCD_Present == 1)                                       // LCD OK
     { 
         //----------------+------------------+-
         // LINE 1  ==>   "230V  25A   Batt:24V"
         //----------------+------------------+-    
-        sprintf(LCD_Line, "%3ldV %2ldA   Batt: %2ldV",gLCD_AC_Volts, gLCD_AC_Amps, gLCD_DC_Volts);
+        
+        A = (float)gLCD_AC_MilliAmps/1000.0;
+        V = (float)gLCD_DC_MilliVolts/1000.0;
+        
+        if (A >= 9.1)
+        {
+              sprintf(LCD_Line, "%3ldV 10.+A Bat:%2d.%1dV",gLCD_AC_Volts, (int)V, (int)(V*10)%10); 
+        } 
+        else  sprintf(LCD_Line, "%3ldV %2d.%1dA Bat:%2d.%1dV",gLCD_AC_Volts, (int)A, (int)(A*10)%10, (int)V, (int)(V*10)%10);
         LCD.setCursor(0, 0); 
         LCD.print(LCD_Line);
     
         //----------------+------------------+-
-        // LINE 2  ==>   "Starter:OFF Fuel:OFF"
+        // LINE 2  ==>   "
         //----------------+------------------+-    
         sprintf(LCD_Line, "Starter:%s Fuel:%s",(gSTARTER_RELAY_ON) ? "ON " : "OFF",(gFUEL_RELAY_ON) ? "ON " : "OFF");
         LCD.setCursor(0, 1); 
         LCD.print(LCD_Line);
     
         //----------------+------------------+-
-        // LINE 3  ==>   "Safe:OFF Request:OFF"
+        // LINE 3  ==>   "
         //----------------+------------------+-  
-        sprintf(LCD_Line, "Safe:%s Request:%s",(gSAFETY_RELAY_ON) ? "ON " : "OFF",(gSYSTEM_START_REQUEST) ? "ON " : "OFF");
+        A = (float)gLCD_AC_MilliAmps/1000.0;
+        (A <= 9.1)? sprintf(LCD_Line, "Amps: [%2d.%02d] A     ", (int)A, (int)(A*100)%100) :  sprintf(LCD_Line, "Amps: [ 10+ ] A     "); 
         LCD.setCursor(0, 2); 
         LCD.print(LCD_Line);
     
@@ -155,7 +175,7 @@ void Update_LCD__DEBUG()
 //==========================================================
 bool Update_LCD(void *)
 {
-    bool LCD_DEBUG = true;
+    bool LCD_DEBUG = false;
     (LCD_DEBUG)? Update_LCD__DEBUG() : Update_LCD__NORMAL();
     return true;                                               // Retun True if this function must be called next time by timer lbrary.
 }

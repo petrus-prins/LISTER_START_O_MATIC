@@ -10,9 +10,9 @@
     //========================
     // LCD VARIABLES
     //========================
-     volatile long gLCD_AC_Volts     = 0;                            // Used by LCD and DIO
-     volatile long gLCD_AC_Amps      = 0;
-     volatile long gLCD_DC_Volts     = 0;
+     volatile long gLCD_AC_Volts      = 0;                            // Used by LCD and DIO
+     volatile long gLCD_AC_MilliAmps  = 0;
+     volatile long gLCD_DC_MilliVolts = 0;
    
 
     //==============================

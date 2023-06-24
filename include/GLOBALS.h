@@ -26,8 +26,8 @@
     //     LCD VARIABLES
     //========================
     extern volatile long gLCD_AC_Volts;
-    extern volatile long gLCD_AC_Amps;
-    extern volatile long gLCD_DC_Volts;                  
+    extern volatile long gLCD_AC_MilliAmps;
+    extern volatile long gLCD_DC_MilliVolts;                  
     extern volatile long Fail_Count;                   //   STARTUP_SHUTDOWN FAIL COUNTER (increases if system reset)
     extern volatile long Total_System_Starts;          //   Increases by 1 on every system bootup
     
