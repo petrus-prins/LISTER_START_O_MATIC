@@ -46,12 +46,23 @@ void onState_S1_DISCOVERY_MODE_Enter()
 
 void onState_S1_DISCOVERY_MODE()                                      // This callback function will be called continuously while state is active 
 {    
+    SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
+    SET_RELAY2_DISABLE_24V_ON_AC(true);
+    SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                         
+    SET_RELAY4_ENABLE_STARTER_MOTOR(false);    
+
     if(S1_DISCOVERY_MODE_Timer.fire()) 
     { 
         STATE_INPUT = Input::xSTART_ENGINE; 
     } 
   
 }
+
+
+//void SET_RELAY1_KEEP_SYSTEM_ALIVE(bool STATE);
+//void SET_RELAY2_DISABLE_24V_ON_AC(bool STATE);
+//void SET_RELAY3_ENABLE_FUEL_SOLENOID(bool STATE);
+//void SET_RELAY4_ENABLE_STARTER_MOTOR(bool STATE);
 
 
 
@@ -65,7 +76,12 @@ void onState_S2_ENGINE_STARTING_Enter()
 
 void onState_S2_ENGINE_STARTING()                                                    
 {
-      if(S2_ENGINE_STARTING_Timer.fire()) 
+    SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
+    SET_RELAY2_DISABLE_24V_ON_AC(true);
+    SET_RELAY3_ENABLE_FUEL_SOLENOID(true);                                // Switch Fuel ON  
+    SET_RELAY4_ENABLE_STARTER_MOTOR(true);                                // Enable Starter Motor
+
+    if(S2_ENGINE_STARTING_Timer.fire()) 
     { 
         STATE_INPUT = Input::xENGINE_RUNNING; 
     }   
@@ -84,11 +100,10 @@ void onState_S3_ENGINE_RUNNING_Enter()
 
 void onState_S3_ENGINE_RUNNING()                                                    
 {
-     // debug test code...
-     gLCD_DC_MilliVolts = random(9000,28000);
-     gLCD_AC_Volts = random(220, 240);  
-   //  gLCD_AC_Amps  = random(0, 301)/10; 
-     //....  
+    SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
+    SET_RELAY2_DISABLE_24V_ON_AC(true);
+    SET_RELAY3_ENABLE_FUEL_SOLENOID(true);                         
+    SET_RELAY4_ENABLE_STARTER_MOTOR(false);   
 }
 
 
@@ -99,6 +114,10 @@ void onState_S3_ENGINE_RUNNING()
 
 void onState_S4_ENGINE_SHUTDOWN_Enter()                                              
 {
+    SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
+    SET_RELAY2_DISABLE_24V_ON_AC(true);
+    SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                         
+    SET_RELAY4_ENABLE_STARTER_MOTOR(false); 
 }
 
 void onState_S4_ENGINE_SHUTDOWN()                                                    
@@ -117,6 +136,10 @@ void onState_S5_SYSTEM_SHUTDOWN_Enter()
 
 void onState_S5_SYSTEM_SHUTDOWN()                                                    
 {
+    SET_RELAY1_KEEP_SYSTEM_ALIVE(false);
+    SET_RELAY2_DISABLE_24V_ON_AC(false);
+    SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                         
+    SET_RELAY4_ENABLE_STARTER_MOTOR(false);
 }
 
 
