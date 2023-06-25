@@ -13,12 +13,13 @@ enum State {S0_INIT, S1_DISCOVERY_MODE, S2_ENGINE_STARTING, S3_ENGINE_RUNNING, S
 
 const char * const stateName[] PROGMEM = { "S0_INIT", "S1_DISOVERY_MODE", "S2_ENGINE_STARTING", "S3_ENGINE_RUNNING", "S4_ENGINE_SHUTDOWN", "S5_SYSTEM_SHUTDOWN"};
 
-enum Input {xINIT, xDISCOVERY_MODE, xALREADY_RUNNING, xSTART_ENGINE, xENGINE_RUNNING, xSHUTDOWN_ENGINE, xSHUTDOWN_SYSTEM};            // State Change Trigger Variables
+enum Input {xINIT, xDISCOVERY_MODE, xSTART_ENGINE, xENGINE_RUNNING, xSHUTDOWN_ENGINE, xSHUTDOWN_SYSTEM};            // State Change Trigger Variables
 Input STATE_INPUT;                                                                                                                    // Latest State Change Input
 
 
 FireTimer S0_INIT_STATE_Timer;
 FireTimer S1_DISCOVERY_MODE_Timer;
+FireTimer S3_ENGINE_RUNNING_Timer;
 FireTimer S2_ENGINE_STARTING_Timer;
 FireTimer S4_ENGINE_SHUTDOWN_Timer;
 
@@ -27,27 +28,17 @@ FireTimer S4_ENGINE_SHUTDOWN_Timer;
 //============================================================
 //                         S0_INIT
 //============================================================
-void onState_S0_INIT_Enter() 
-{
-    WRITE_New_Startup_Count_To_EEPROM();                              // If we reached this state it counts as a successful boot.
-    S0_INIT_STATE_Timer.start();                                      // Start 2 second timer to allow system to gather stats.
-}
+
+
+
+
+
 
 void onState_S0_INIT()                                                // This state is the default startup state.                                
 {
-    SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
-    SET_RELAY2_DISABLE_24V_ON_AC(true);
-    SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                         
-    SET_RELAY4_ENABLE_STARTER_MOTOR(false); 
-
-    if(S0_INIT_STATE_Timer.fire()) 
-    { 
-       STATE_INPUT = Input::xDISCOVERY_MODE;                          // After 2 seconds 
-    } 
+    STATE_INPUT = Input::xDISCOVERY_MODE;                             // Dummy State
 }
 //============================================================
-
-
 
 
 //============================================================
@@ -70,13 +61,16 @@ void onState_S1_DISCOVERY_MODE()                                      // This ca
     SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                         
     SET_RELAY4_ENABLE_STARTER_MOTOR(false);    
 
-    if  (gENGINE_IS_IDLE_FLAG)                                        // If any one of these are true, assume system in not in idle state
+    if (S1_DISCOVERY_MODE_Timer.fire())
     {
-         STATE_INPUT = Input::xALREADY_RUNNING;                       // Goto Engine Running State
-    }   
-    else
-    {
-          STATE_INPUT = Input::xSTART_ENGINE;                         // If system is in idle state, goto to start engine 
+        if  (gENGINE_IS_IDLE_FLAG)                                        
+        {
+            STATE_INPUT = Input::xSTART_ENGINE;                         // If system is in idle state, goto to start engine 
+        } 
+        else
+        {
+            STATE_INPUT = Input::xENGINE_RUNNING;
+        } 
     }
 }
 //============================================================
@@ -116,6 +110,7 @@ void onState_S2_ENGINE_STARTING()
 //============================================================
 void onState_S3_ENGINE_RUNNING_Enter()                                              
 {
+    S3_ENGINE_RUNNING_Timer.start();
 }
 
 void onState_S3_ENGINE_RUNNING()                                                    
@@ -125,9 +120,12 @@ void onState_S3_ENGINE_RUNNING()
     SET_RELAY3_ENABLE_FUEL_SOLENOID(true);                         
     SET_RELAY4_ENABLE_STARTER_MOTOR(false);
 
-    if (gZERO_CURRENT_TRIGGER_ACTIVE)                                   // Zero Current Detected Flag 
+    if (S3_ENGINE_RUNNING_Timer.fire())
     {
-       STATE_INPUT = Input::xSHUTDOWN_ENGINE; 
+        if (gZERO_CURRENT_TRIGGER_ACTIVE)                                   // Zero Current Detected Flag 
+        {
+            STATE_INPUT = Input::xSHUTDOWN_ENGINE; 
+        }
     }
 }
 //============================================================
@@ -189,7 +187,7 @@ void INIT_STATE_MACHINE()
     //==========================   
     // Follow the order of defined enumeration for the state definition (will be used as index)
     //Add States                   => name,         timeout,       onEnter callback,                onState cb,           onLeave cb
-    STATE_MACHINE.AddState(stateName[S0_INIT]            ,  0,  onState_S0_INIT_Enter            ,  onState_S0_INIT            , nullptr);  // Default State when System Starts.
+    STATE_MACHINE.AddState(stateName[S0_INIT]            ,  0,  nullptr                          ,  onState_S0_INIT            , nullptr);  // Default State when System Starts.
     STATE_MACHINE.AddState(stateName[S1_DISCOVERY_MODE]  ,  0,  onState_S1_DISCOVERY_MODE_Enter  ,  onState_S1_DISCOVERY_MODE  , nullptr);
     STATE_MACHINE.AddState(stateName[S2_ENGINE_STARTING] ,  0,  onState_S2_ENGINE_STARTING_Enter ,  onState_S2_ENGINE_STARTING , nullptr);
     STATE_MACHINE.AddState(stateName[S3_ENGINE_RUNNING]  ,  0,  onState_S3_ENGINE_RUNNING_Enter  ,  onState_S3_ENGINE_RUNNING  , nullptr);
@@ -203,16 +201,16 @@ void INIT_STATE_MACHINE()
     STATE_MACHINE.AddTransition(S5_SYSTEM_SHUTDOWN       , S0_INIT             ,  [](){return (STATE_INPUT == xINIT);            });    // System boot initial state
     STATE_MACHINE.AddTransition(S0_INIT                  , S1_DISCOVERY_MODE   ,  [](){return (STATE_INPUT == xDISCOVERY_MODE);  });    // Check all system inputs - determine if engine is off
     STATE_MACHINE.AddTransition(S1_DISCOVERY_MODE        , S2_ENGINE_STARTING  ,  [](){return (STATE_INPUT == xSTART_ENGINE);    });    // Start Engine (takes 30s until full speed)
+    STATE_MACHINE.AddTransition(S1_DISCOVERY_MODE        , S3_ENGINE_RUNNING   ,  [](){return (STATE_INPUT == xENGINE_RUNNING);  });    // Assume Engine Running - check engine stats.
     STATE_MACHINE.AddTransition(S2_ENGINE_STARTING       , S3_ENGINE_RUNNING   ,  [](){return (STATE_INPUT == xENGINE_RUNNING);  });    // Assume Engine Running - check engine stats.
     STATE_MACHINE.AddTransition(S3_ENGINE_RUNNING        , S4_ENGINE_SHUTDOWN  ,  [](){return (STATE_INPUT == xSHUTDOWN_ENGINE); });    // No more current drawn, so shutting down engine (30s until stop)
     STATE_MACHINE.AddTransition(S4_ENGINE_SHUTDOWN       , S5_SYSTEM_SHUTDOWN  ,  [](){return (STATE_INPUT == xSHUTDOWN_SYSTEM); });    // Put system in endless loop and disconnect keepalive relay.
-    STATE_MACHINE.AddTransition(S0_INIT                  , S3_ENGINE_RUNNING   ,  [](){return (STATE_INPUT == xALREADY_RUNNING); });    // System reached init but engine still active
-
+    
     //==========================
     //    ADD ERROR STATE      
     //==========================   
     // This state change should never be needed. If System starts up and engine is already running - just keep it running. 
-    STATE_MACHINE.AddTransition(S1_DISCOVERY_MODE        , S3_ENGINE_RUNNING  ,     [](){return (STATE_INPUT == xALREADY_RUNNING); });
+    //STATE_MACHINE.AddTransition(S1_DISCOVERY_MODE        , S3_ENGINE_RUNNING  ,     [](){return (STATE_INPUT == xALREADY_RUNNING); });
 
     
     //==============================
@@ -244,9 +242,10 @@ void setup()
     INIT_Timers();
     INIT_STATE_MACHINE();
 
-    S0_INIT_STATE_Timer.begin(2000);
-    S1_DISCOVERY_MODE_Timer.begin(1000);                
+    S0_INIT_STATE_Timer.begin(10000);
+    S1_DISCOVERY_MODE_Timer.begin(10000);                
     S2_ENGINE_STARTING_Timer.begin(25000);              // takes 25s for engine to start up
+    S3_ENGINE_RUNNING_Timer.begin(10000); 
     S4_ENGINE_SHUTDOWN_Timer.begin(30000);              // Takes 30s for engine to stop turning
 }
 
