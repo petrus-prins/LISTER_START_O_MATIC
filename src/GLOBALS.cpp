@@ -18,6 +18,7 @@
     //==============================
     // NO CURRENT CUTOFF DETECTION
     //==============================
+     volatile bool gENGINE_IS_IDLE_FLAG = false; 
      volatile bool gZERO_CURRENT_TRIGGER_ACTIVE = true;             // Flag indicating that no AC current is used any more - i.e. OK to Switch Engine Off.
      volatile long gCUTOFF_ADC_Value_mV = 0; 
 

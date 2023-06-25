@@ -21,8 +21,8 @@ void INIT_EEPROM()
     EEPROMwl.begin(EEPROM_LAYOUT_VERSION, AMOUNT_OF_INDEXES);
     READ_Startup_Stats_From_EEPROM();
     Sanity_Check_Shutdown_Stats_Before_Save();                     
-    WRITE_New_Startup_Count_To_EEPROM();
-    WRITE_New_Shutdown_Count_To_EEPROM();
+    //WRITE_New_Startup_Count_To_EEPROM();                                         // Increase System Startup Count (Used in INIT state)
+   // WRITE_New_Shutdown_Count_To_EEPROM();                                        // Prevent Failure Count From Incrementing  (Used In Shutdown State)
     (void) EEPROM; // just shut up warning about not using EEPROM
 }
 

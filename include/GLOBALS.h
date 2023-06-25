@@ -34,9 +34,10 @@
     //==============================
     // NO CURRENT CUTOFF DETECTION
     //==============================
+    extern volatile bool gENGINE_IS_IDLE_FLAG;              // If current or voltage is measured 
     extern volatile bool gZERO_CURRENT_TRIGGER_ACTIVE;      //  True when gCUTOFF_ADC_Value_mV is >= 4.2V
     extern volatile long gCUTOFF_ADC_Value_mV;               
-  
+ 
 
 
     //========================

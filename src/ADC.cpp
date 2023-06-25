@@ -239,8 +239,23 @@ void Update_AC_AMPS_Stats(void)
 
 
 
-
-
+//=============================================================
+//                CAPTURE ENGINE IDLE STATS
+//==============================================================
+void Update_System_IDLE_Stats()
+{
+    if  (   (gLCD_AC_Volts > 1) ||                                     // If any one of these are true, assume system in NOT in idle state
+            (gZERO_CURRENT_TRIGGER_ACTIVE == false) ||                 // 
+            (gLCD_AC_MilliAmps > 100)
+        ) 
+    {
+        gENGINE_IS_IDLE_FLAG = false;
+    }   
+    else
+    {
+         gENGINE_IS_IDLE_FLAG = true;
+    }
+}
 
 
 
@@ -261,6 +276,7 @@ bool Update_ALL_ADC_Values(void *)
     Update_ADC_24VDC_Stats();
     Update_CUTOFF_Stats();
     Update_AC_AMPS_Stats();
+    Update_System_IDLE_Stats();
     return true;                                                    // Retun True if this function must be called next time by timer lbrary.
 }
 
