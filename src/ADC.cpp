@@ -232,6 +232,7 @@ void Update_AC_AMPS_Stats(void)
     if (AC_AMPS_Max.count() > 500)                               // 500 Samples should be enough for us to calculate voltage.                   
     {
         local_AC_AMPS = Calculate_Real_AC_AMPS(AC_AMPS_Max.average(),AC_AMPS_Min.average());
+        gZERO_Amps_Measured_Flag = (local_AC_AMPS == 0);
         gLCD_AC_MilliAmps = (long) (local_AC_AMPS * 1000);
         RESET_AC_AMPS_Stats();
     }

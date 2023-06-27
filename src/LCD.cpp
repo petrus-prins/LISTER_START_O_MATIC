@@ -95,27 +95,37 @@ void Update_LCD__NORMAL()
         //----------------+------------------+-
         // LINE 4  ==>   "S1: DISOVERY MODE"
         //----------------+------------------+-  
+        
+        Blink_State = !Blink_State;
+        if (Blink_State)
+        {
+            sprintf(LCD_Line, "                    "); 
+        }
+        else
         switch(gSYSTEM_STATE) 
         {
             case 1:             // +------------------+
                 sprintf(LCD_Line, "S1: DISCOVERY MODE  ");
             break;
             case 2:
-                (Blink_State)? sprintf(LCD_Line, "S2: ENGINE STARTING ") : sprintf(LCD_Line, "S2:                 "); Blink_State = !Blink_State;
+                sprintf(LCD_Line, "S2: ENGINE STARTING ");
             break;
             case 3:
                 sprintf(LCD_Line, "S3: ENGINE RUNNING  ");
             break;
-            case 4:
-                sprintf(LCD_Line, "S4: ENGINE SHUTDOWN ");
+            case 4: 
+                sprintf(LCD_Line, "S4: POWERING HOUSE  ");            
             break;
             case 5:
-                sprintf(LCD_Line, "S5: SYSTEM SHUTDOWN ");
+                sprintf(LCD_Line, "S5: ENGINE SHUTDOWN ");
             break;
+            case 6:
+                sprintf(LCD_Line, "S6: SYSTEM SHUTDOWN ");
+            break;   
             default:
                 sprintf(LCD_Line, "S0: INIT            ");
         }
-
+        
         LCD.setCursor(0, 3); 
         LCD.print(LCD_Line);
     

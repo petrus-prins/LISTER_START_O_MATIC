@@ -2,7 +2,7 @@
 #include <EEPROMWearLevel.h>
 
 
-#define EEPROM_LAYOUT_VERSION 1
+#define EEPROM_LAYOUT_VERSION 0
 #define AMOUNT_OF_INDEXES 2
 
 #define INDEX_CONFIGURATION_VAR1 0
@@ -22,7 +22,7 @@ void INIT_EEPROM()
     READ_Startup_Stats_From_EEPROM();
     Sanity_Check_Shutdown_Stats_Before_Save();                     
     WRITE_New_Startup_Count_To_EEPROM();                                         // Increase System Startup Count (Used in INIT state)
-    WRITE_New_Shutdown_Count_To_EEPROM();                                        // Prevent Failure Count From Incrementing  (Used In Shutdown State)
+    //WRITE_New_Shutdown_Count_To_EEPROM();                                        // Prevent Failure Count From Incrementing  (Used In Shutdown State)
     (void) EEPROM; // just shut up warning about not using EEPROM
 }
 

@@ -35,7 +35,7 @@ void INIT_DIGITAL_PIN_Modes()
 void INIT_RELAY_STATES()
 {
     SET_RELAY1_KEEP_SYSTEM_ALIVE(true);               // Bridge 24V relay as to keep system alive.    
-    SET_RELAY2_DISABLE_24V_ON_AC(true);               // Then remove the 24V that is sent down the dormant 220VAC line.
+    SET_RELAY2_ENABLE_230VAC_LINE(false);             // Disconnect 230V AC line, connect 24V to acline in stead.
     SET_RELAY3_ENABLE_FUEL_SOLENOID(false);           // Ensure that FUEL solenoid is not active
     SET_RELAY4_ENABLE_STARTER_MOTOR(false);           // Ensure that the starter motor is not active.   
 }
@@ -47,7 +47,7 @@ void SET_RELAY1_KEEP_SYSTEM_ALIVE(bool STATE)
     digitalWrite(RELAY1_PIN, STATE);
 }
 
-void SET_RELAY2_DISABLE_24V_ON_AC(bool STATE)
+void SET_RELAY2_ENABLE_230VAC_LINE(bool STATE)
 {
     digitalWrite(RELAY2_PIN, STATE);
     gSAFETY_RELAY_ON = STATE;

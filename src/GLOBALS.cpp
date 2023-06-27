@@ -20,6 +20,7 @@
     //==============================
      volatile bool gENGINE_IS_IDLE_FLAG = false; 
      volatile bool gZERO_CURRENT_TRIGGER_ACTIVE = true;             // Flag indicating that no AC current is used any more - i.e. OK to Switch Engine Off.
+     volatile bool gZERO_Amps_Measured_Flag = true;
      volatile long gCUTOFF_ADC_Value_mV = 0; 
 
     //========================

@@ -1,6 +1,6 @@
 #ifndef HEADER_TIMERS
 #define HEADER_TIMERS
 
-    void INIT_Timers();
+    void INIT_BACKGROUND_Timers();
 
 #endif
