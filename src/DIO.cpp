@@ -44,12 +44,12 @@ void INIT_RELAY_STATES()
 
 void SET_RELAY1_KEEP_SYSTEM_ALIVE(bool STATE)
 {
-    digitalWrite(RELAY1_PIN, STATE);
+    digitalWrite(RELAY2_PIN, STATE);
 }
 
 void SET_RELAY2_ENABLE_230VAC_LINE(bool STATE)
 {
-    digitalWrite(RELAY2_PIN, STATE);
+    digitalWrite(RELAY1_PIN, STATE);
     gSAFETY_RELAY_ON = STATE;
 }
 

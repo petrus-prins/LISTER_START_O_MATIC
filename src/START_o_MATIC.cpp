@@ -37,6 +37,10 @@ void onState_S0_INIT_Enter()
 }
 void onState_S0_INIT()                                                // This state is the default startup state.                                
 {
+    SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
+    SET_RELAY2_ENABLE_230VAC_LINE(false);                            // Keep 230V Off 
+    SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                         
+    SET_RELAY4_ENABLE_STARTER_MOTOR(false); 
     if (S0_INIT_STATE_Timer.fire())
     {
         STATE_INPUT = Input::xDISCOVERY_MODE;                         
