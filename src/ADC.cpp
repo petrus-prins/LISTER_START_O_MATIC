@@ -245,7 +245,7 @@ void Update_AC_AMPS_Stats(void)
 //==============================================================
 void Update_System_IDLE_Stats()
 {
-    if  (   (gLCD_AC_Volts > 1) ||                                     // If any one of these are true, assume system in NOT in idle state
+    if  (   (gLCD_AC_Volts > 10) ||                                     // If any one of these are true, assume system in NOT in idle state
             (gZERO_CURRENT_TRIGGER_ACTIVE == false) ||                 // 
             (gLCD_AC_MilliAmps > 100)
         ) 

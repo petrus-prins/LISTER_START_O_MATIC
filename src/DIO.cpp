@@ -45,22 +45,26 @@ void INIT_RELAY_STATES()
 void SET_RELAY1_KEEP_SYSTEM_ALIVE(bool STATE)
 {
     digitalWrite(RELAY2_PIN, STATE);
+    delay(250);
 }
 
 void SET_RELAY2_ENABLE_230VAC_LINE(bool STATE)
 {
     digitalWrite(RELAY1_PIN, STATE);
+    delay(250);
     gSAFETY_RELAY_ON = STATE;
 }
 
 void SET_RELAY3_ENABLE_FUEL_SOLENOID(bool STATE)
 {
     digitalWrite(RELAY3_PIN, STATE);
+    delay(250);
     gFUEL_RELAY_ON = STATE;
 }
 
 void SET_RELAY4_ENABLE_STARTER_MOTOR(bool STATE)
 {
     digitalWrite(RELAY4_PIN, STATE);
+    delay(250);
     gSTARTER_RELAY_ON = STATE;
 }

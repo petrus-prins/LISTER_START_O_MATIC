@@ -38,7 +38,7 @@ void onState_S0_INIT_Enter()
 void onState_S0_INIT()                                                // This state is the default startup state.                                
 {
     SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
-    SET_RELAY2_ENABLE_230VAC_LINE(false);                            // Keep 230V Off 
+    SET_RELAY2_ENABLE_230VAC_LINE(false);                             // Keep 24V on line...
     SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                         
     SET_RELAY4_ENABLE_STARTER_MOTOR(false); 
     if (S0_INIT_STATE_Timer.fire())
@@ -65,7 +65,7 @@ void onState_S1_DISCOVERY_MODE_Enter()
 void onState_S1_DISCOVERY_MODE()                                      // This callback function will be called continuously while state is active 
 {    
     SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
-    SET_RELAY2_ENABLE_230VAC_LINE(false);                            // Keep 230V Off 
+    SET_RELAY2_ENABLE_230VAC_LINE(false);                             // Keep 24V on line... 
     SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                         
     SET_RELAY4_ENABLE_STARTER_MOTOR(false);    
 
@@ -99,7 +99,7 @@ void onState_S2_ENGINE_STARTING_Enter()
 void onState_S2_ENGINE_STARTING()                                                    
 {
     SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
-    SET_RELAY2_ENABLE_230VAC_LINE(true);                                 
+    SET_RELAY2_ENABLE_230VAC_LINE(true);                                  // Switch AC line on...
     SET_RELAY3_ENABLE_FUEL_SOLENOID(true);                                // Switch Fuel ON  
     SET_RELAY4_ENABLE_STARTER_MOTOR(true);                                // Enable Starter Motor
 
@@ -149,8 +149,8 @@ void onState_S4_POWERING_HOUSE()
 {
     SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
     SET_RELAY2_ENABLE_230VAC_LINE(true);                          // Remove 24V from line, Put 220V back on line to house.
-    SET_RELAY3_ENABLE_FUEL_SOLENOID(true);                         
-    SET_RELAY4_ENABLE_STARTER_MOTOR(false);
+    SET_RELAY3_ENABLE_FUEL_SOLENOID(true);                       // keep fuel on                 
+    SET_RELAY4_ENABLE_STARTER_MOTOR(false);                       // 
 
     if (S4_POWERING_HOUSE_Timer.fire())
     {
@@ -176,8 +176,8 @@ void onState_S5_ENGINE_SHUTDOWN()
 {
     SET_RELAY1_KEEP_SYSTEM_ALIVE(true);
     SET_RELAY2_ENABLE_230VAC_LINE(true);
-    SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                         
-    SET_RELAY4_ENABLE_STARTER_MOTOR(false);
+    SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                      // kill fuel                   
+    SET_RELAY4_ENABLE_STARTER_MOTOR(false);                      // kill starter
 
     if(S5_ENGINE_SHUTDOWN_Timer.fire())
     {
@@ -199,14 +199,17 @@ void onState_S6_SYSTEM_SHUTDOWN_Enter()
 
 void onState_S6_SYSTEM_SHUTDOWN()                                                  // Endless loop but also kills its own power     
 {
-    //SET_RELAY1_KEEP_SYSTEM_ALIVE(false);
-    SET_RELAY2_ENABLE_230VAC_LINE(false);                                         // Put 
+                                         
     SET_RELAY3_ENABLE_FUEL_SOLENOID(false);                         
     SET_RELAY4_ENABLE_STARTER_MOTOR(false);
 
     if (S6_SYSTEM_SHUTDOWN_Timer.fire())
     {
-       SET_RELAY1_KEEP_SYSTEM_ALIVE(false); 
+       if (gENGINE_IS_IDLE_FLAG)                                                  // Wait until engine is completetly 
+       {
+        SET_RELAY2_ENABLE_230VAC_LINE(false);
+        SET_RELAY1_KEEP_SYSTEM_ALIVE(false);
+       }
     }
 }
 

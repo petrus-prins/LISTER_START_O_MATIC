@@ -88,7 +88,7 @@ void Update_LCD__NORMAL()
         //----------------+------------------+-
         // LINE 3  ==>   "Safe:OFF Request:OFF"
         //----------------+------------------+-  
-        sprintf(LCD_Line, "Safe:%s Request:%s",(gSAFETY_RELAY_ON) ? "ON " : "OFF",(gSYSTEM_START_REQUEST) ? "ON " : "OFF");
+        sprintf(LCD_Line, "AC Line House : %s",(gSAFETY_RELAY_ON) ? "ON  " : "OFF ");
         LCD.setCursor(0, 2); 
         LCD.print(LCD_Line);
     
