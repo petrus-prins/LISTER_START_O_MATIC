@@ -177,7 +177,7 @@ void Update_ADC_24VDC_Stats(void)
         local_DC_Voltage = (local_DC_Voltage*VREF/1024.0)*11.2 +0.62;   // Protecton Diode offset is 0.62 volt.
         if (local_DC_Voltage < 0.7) {local_DC_Voltage = 0.0;}              // Diode drop
         if (local_DC_Voltage > 99.0) {local_DC_Voltage = 99.0;}
-        gLCD_DC_MilliVolts =  (long) local_DC_Voltage*1000;            
+        gLCD_DC_MilliVolts =  (long) (local_DC_Voltage*1000.0);            
         RESET_DC_Voltage_Stats();                                  // Reset 24V stats.
      }                 
 }

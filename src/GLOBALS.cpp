@@ -36,12 +36,5 @@
     //========================
     volatile uint8_t gSYSTEM_STATE = 0;
 
-    //========================
-    // Live Voltage Stats
-    //========================
-//    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Raw;
-//    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Min;
-//    statistic::Statistic<float, uint32_t, true> gAC_VOLTS_Max;
-//    statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Raw;
-//    statistic::Statistic<float, uint32_t, true> gDC_VOLTS_Max;
+
 
